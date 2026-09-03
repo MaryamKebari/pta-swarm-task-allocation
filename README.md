@@ -4,64 +4,49 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Cite this repository](https://img.shields.io/badge/cite-CITATION.cff-6f42c1.svg)](CITATION.cff)
 
-Code and processed results for **“Feedback Regulation of Threshold Adaptation
-for Dynamic Swarm Task Allocation.”** The repository implements
-Proportional, Integral, and Derivative Threshold Adaptation (PTA) and the four
-comparison families used in the paper: constant thresholds (CT), learning and
-forgetting threshold adaptation (LFTA), sign based threshold adaptation
-(SBTA), and single error threshold adaptation (SETA).
+This repository contains the simulation code, selected parameters, analysis
+scripts, and processed results for **“Feedback Regulation of Threshold
+Adaptation for Dynamic Swarm Task Allocation.”**
 
-PTA changes each task threshold using three parts of shared task allocation
-feedback:
+## Overview
 
-1. current signed error;
-2. bounded, leaky accumulated error;
-3. the recent change in the nonnegative selector stimulus.
+The study asks whether a swarm can improve dynamic task allocation by updating
+each agent's response thresholds from shared task allocation feedback.
+Proportional, Integral, and Derivative Threshold Adaptation (PTA) combines:
 
-The simulator source in [`simulator/src`](simulator/src) is the source whose
-`ftracker.c` checksum matches the final experiment manifest.
+1. the current signed allocation error;
+2. a bounded, leaky history of that error;
+3. the recent change in the nonnegative stimulus used for task selection.
 
-For a guided tour, start with the [repository map](docs/REPOSITORY_MAP.md), then
-read the [method definitions](docs/METHODS.md) and
-[experiment design](docs/EXPERIMENTS.md).
+PTA is compared with four threshold update methods:
 
-## Research workflow
+- constant thresholds (CT);
+- learning and forgetting threshold adaptation (LFTA);
+- sign based threshold adaptation (SBTA);
+- single error threshold adaptation (SETA).
 
-```mermaid
-flowchart LR
-    A[Reference setting<br/>500 agents, 4 tasks,<br/>s = 2.0, iterative gradual] --> B[Parameter tuning]
-    B --> C[Freeze selected parameters]
-    C --> D[Clean feedback grid<br/>50 to 1000 agents<br/>4 to 12 tasks]
-    C --> E[Controller ablation]
-    C --> F[Agent removal]
-    C --> G[Imperfect feedback]
-    D --> H[Paired statistical analysis]
-    E --> H
-    F --> H
-    G --> H
-    H --> I[Paper tables and figures]
-```
+The experiments examine performance across population sizes, task counts,
+capacity levels, demand classes, threshold ranges, stored threshold modes, and
+gain schemes. Separate experiments test the roles of the integral and
+derivative terms, agent removal, and imperfect feedback.
 
-## What is included
+## Start here
 
-| Path | Contents |
+| If you want to... | Go to... |
 |---|---|
-| [`simulator/src`](simulator/src) | Verified C simulator source used by the final campaign |
-| [`configs`](configs) | Paper experiment specification and simulator output settings |
-| [`data/parameters`](data/parameters) | Reference tuned parameter values |
-| [`data/manifests`](data/manifests) | Source checksums and preflight audits |
-| [`data/processed`](data/processed) | Compact tables used by the statistical analysis and figures |
-| [`analysis`](analysis) | Audits, paired tests, bootstrap analyses, and plotting code |
-| [`figures`](figures) | Figures regenerated from the processed data |
-| [`docs`](docs) | Method, experiment, data, provenance, and reproduction guides |
-| [`tests`](tests) | Simulator contract and analysis tests |
+| Understand PTA and the comparison methods | [Method definitions](docs/METHODS.md) |
+| See exactly which experiments are run | [Experiment design](docs/EXPERIMENTS.md) |
+| Find a file or understand the folder structure | [Repository map](docs/REPOSITORY_MAP.md) |
+| Inspect the available data and column definitions | [Data guide](docs/DATA.md) |
+| Reproduce the analysis | [Reproducibility guide](docs/REPRODUCIBILITY.md) |
+| Verify that this is the final simulator version | [Provenance record](docs/PROVENANCE.md) |
+| Interpret the figures and their source tables | [Figure guide](docs/FIGURES.md) |
 
-The multi gigabyte per run CSV files are intentionally not committed to Git.
-Their expected locations and schemas are documented in
-[`docs/DATA.md`](docs/DATA.md). The compact processed tables are sufficient to
-inspect the reported aggregates and regenerate the principal plots.
+Only one simulator source tree is included. Its 23 compiled source files and
+the final base parameter file are checked against recorded SHA 256 hashes by
+`make verify`.
 
-## Quick start
+## Quick verification
 
 Requirements: GCC or Clang, GNU Make, and Python 3.10 or newer.
 
@@ -77,30 +62,70 @@ python -m pip install -r requirements.txt
 make build
 make smoke
 make test
+make verify
 make figures
 ```
 
-`make smoke` compiles the C simulator, runs a short deterministic experiment
-in a temporary directory, verifies the output metrics, and leaves the working
-tree unchanged.
+`make smoke` runs a short deterministic PTA experiment in a temporary
+directory. `make test` checks the simulator and processed data contracts.
+`make verify` checks the experimental grid, source provenance, portability,
+and common secret or personal path patterns. `make figures` regenerates the
+included figures from the processed tables.
+
+## Experimental workflow
+
+```mermaid
+flowchart LR
+    A[Reference setting] --> B[Tune parameters]
+    B --> C[Freeze selected parameters]
+    C --> D[Clean feedback evaluation]
+    C --> E[Controller ablation]
+    C --> F[Agent removal]
+    C --> G[Imperfect feedback]
+    D --> H[Statistical analysis]
+    E --> H
+    F --> H
+    G --> H
+    H --> I[Paper tables and figures]
+```
 
 ## Experimental design at a glance
 
-| Experiment | Population | Tasks | Step ratio | Demand | Main purpose |
+| Experiment | Population | Tasks | Step ratio | Demand | Purpose |
 |---|---:|---:|---:|---|---|
-| Allocation accuracy | 50, 100, 500, 1000 | 4, 8, 12 | 1.5, 2.0, 2.5 | Four classes | Transfer across operating conditions |
-| PTA term ablation | 500 | 4, 12 | 1.5, 2.5 | Repeated reversal and plateau | Roles of integral and derivative action |
-| Agent removal | 50, 100, 500, 1000 | 4, 8, 12 | 1.5, 2.0, 2.5 | Four classes | Performance after 0 to 50% removal |
-| Imperfect feedback | 500 | 4, 12 | 1.5, 2.0, 2.5 | Four classes | Gaussian noise and task fixed bias |
+| Allocation accuracy | 50, 100, 500, 1000 | 4, 8, 12 | 1.5, 2.0, 2.5 | Four classes | Test parameter transfer across operating conditions |
+| PTA term ablation | 500 | 4, 12 | 1.5, 2.5 | Repeated reversal and plateau | Identify the roles of integral and derivative action |
+| Agent removal | 50, 100, 500, 1000 | 4, 8, 12 | 1.5, 2.0, 2.5 | Four classes | Measure performance after removing 0% to 50% of agents |
+| Imperfect feedback | 500 | 4, 12 | 1.5, 2.0, 2.5 | Four classes | Test Gaussian noise and task fixed bias |
 
-Every reported run lasts 1,000 steps and uses 100 repetitions matched across
-methods through shared seeds. Adaptive configurations are tuned at one
-reference setting, then evaluated without retuning. See
-[`docs/EXPERIMENTS.md`](docs/EXPERIMENTS.md) for the complete design.
+Every reported run contains 1,000 time steps. Each tested condition uses 100
+repetitions with seeds matched across methods. Adaptive configurations are
+tuned at one reference setting and then evaluated without retuning. The
+[experiment design](docs/EXPERIMENTS.md) gives the complete factor definitions
+and comparison rules.
+
+## Repository contents
+
+| Path | Contents |
+|---|---|
+| [`simulator/src`](simulator/src) | Verified C simulator source |
+| [`configs`](configs) | Experimental design and simulator settings |
+| [`data/parameters`](data/parameters) | Selected reference tuned parameters |
+| [`data/manifests`](data/manifests) | Source hashes and audit records |
+| [`data/processed`](data/processed) | Compact data used for tables and figures |
+| [`analysis`](analysis) | Statistical analysis and plotting scripts |
+| [`figures`](figures) | Regenerated paper figures |
+| [`docs`](docs) | Detailed method, data, and reproduction guides |
+| [`tests`](tests) | Simulator and data contract tests |
+
+The multi gigabyte per run result files are not stored in Git. The processed
+tables needed to inspect the reported aggregates and regenerate the principal
+figures are included. The [data guide](docs/DATA.md) documents the raw file
+schemas and expected locations.
 
 ## Selected result views
 
-### Advantage by demand class
+### PTA advantage by demand class
 
 ![PTA advantage by demand class](docs/assets/demand_class_pta_advantage.png)
 
@@ -108,40 +133,22 @@ reference setting, then evaluated without retuning. See
 
 ![Preferred PTA configuration across the allocation grid](docs/assets/frozen_reference_winner_atlas.png)
 
-### Robustness to agent removal
+### Performance after agent removal
 
-![PTA deterioration after agent removal](docs/assets/agent_removal_deterioration.png)
+![PTA performance after agent removal](docs/assets/agent_removal_deterioration.png)
 
-The figures are previews, not substitutes for the numerical tables. Definitions,
-axes, aggregation rules, and source tables are listed in
-[`docs/FIGURES.md`](docs/FIGURES.md).
-
-## Reproduce the figures
-
-The included processed tables reproduce the paper facing figures without the
-large raw files:
-
-```bash
-python analysis/generate_paper_figures.py
-python analysis/imperfect_feedback/analyze_imperfect_feedback_results.py
-python analysis/population/plot_population_mechanism_diagnostic.py \
-  --trajectories data/processed/population/population_mechanism_trajectories.npz \
-  --validation data/processed/population/replay_validation.csv \
-  --out figures/population_mechanism_diagnostic.pdf \
-  --summary data/processed/population/population_mechanism_summary.csv \
-  --representative data/processed/population/representative_timeseries.csv
-```
-
-To repeat an audit from raw outputs, place the data as described in
-[`docs/DATA.md`](docs/DATA.md), or set the documented environment variables.
+The [figure guide](docs/FIGURES.md) defines the axes, aggregation rules, and
+source tables for these previews.
 
 ## Citation
 
-Use the repository’s **Cite this repository** menu or the metadata in
-[`CITATION.cff`](CITATION.cff). A DOI can be added by archiving a tagged
-GitHub release with Zenodo. Until the article has final bibliographic details,
-please cite the software release and the accompanying manuscript title.
+Use GitHub's **Cite this repository** menu or the metadata in
+[`CITATION.cff`](CITATION.cff). Until the article has final bibliographic
+details, please cite the software release and the accompanying manuscript.
 
 ## License
 
-The repository is released under the [MIT License](LICENSE).
+The code is available under the [MIT License](LICENSE). It may be used,
+modified, and redistributed as long as the copyright and license notice are
+retained. The software is provided without a warranty. Academic citation is
+requested separately through [`CITATION.cff`](CITATION.cff).
