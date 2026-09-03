@@ -1,0 +1,65 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "check": "simulator source files",
+      "passed": true,
+      "detail": "present"
+    },
+    {
+      "check": "base runner files",
+      "passed": true,
+      "detail": "present"
+    },
+    {
+      "check": "PTA stimulus derivative",
+      "passed": true,
+      "detail": "uses max(e_tilde(t),0)-max(e_tilde(t-1),0)"
+    },
+    {
+      "check": "Pid method mapping",
+      "passed": true,
+      "detail": "expected 0/1/2/3/4 mapping"
+    },
+    {
+      "check": "latent SETA/PTA stored bounds",
+      "passed": true,
+      "detail": "found 2 upper/lower latent guards"
+    },
+    {
+      "check": "first non-idle assignment excluded from switches",
+      "passed": true,
+      "detail": "explicit prior-task guard found"
+    },
+    {
+      "check": "paired-vector excess service",
+      "passed": true,
+      "detail": "cumulative service update found"
+    },
+    {
+      "check": "independent random-demand stream",
+      "passed": true,
+      "detail": "legacy_vector_random uses target_path_uniform"
+    },
+    {
+      "check": "parameter-seeded target RNG initialization",
+      "passed": true,
+      "detail": "initialized once after parameter loading"
+    },
+    {
+      "check": "required finalstats fields",
+      "passed": true,
+      "detail": "present"
+    },
+    {
+      "check": "no-feedback-clipping runner default",
+      "passed": true,
+      "detail": "default is 0"
+    },
+    {
+      "check": "common tuning paths across gain candidates",
+      "passed": true,
+      "detail": "Optuna trial number is absent from tuning simulation seeds"
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "status": "PASS",
+  "statement": "legacy_vector_random is identical across methods, perturbations, and simulator seeds when TargetPathSeed is fixed, and changes when TargetPathSeed changes",
+  "results": [
+    {
+      "label": "ct_clean",
+      "simulator_seed": 11001,
+      "target_seed": 424242,
+      "pid": 4,
+      "threshold_type": 1,
+      "noise_alpha": 0.0,
+      "bias_alpha": 0.0,
+      "steps": 240,
+      "sha256": "4c731a468d6da6cbfa94bf0f9ce0b1e4621039fc18c1b575b73f21836a2ca9da",
+      "focus_counts": {
+        "1": 55,
+        "2": 60,
+        "3": 72,
+        "4": 53
+      },
+      "focus_changes": 176
+    },
+    {
+      "label": "pta_clean",
+      "simulator_seed": 22002,
+      "target_seed": 424242,
+      "pid": 1,
+      "threshold_type": 2,
+      "noise_alpha": 0.0,
+      "bias_alpha": 0.0,
+      "steps": 240,
+      "sha256": "4c731a468d6da6cbfa94bf0f9ce0b1e4621039fc18c1b575b73f21836a2ca9da",
+      "focus_counts": {
+        "1": 55,
+        "2": 60,
+        "3": 72,
+        "4": 53
+      },
+      "focus_changes": 176
+    },
+    {
+      "label": "pta_perturbed",
+      "simulator_seed": 33003,
+      "target_seed": 424242,
+      "pid": 1,
+      "threshold_type": 3,
+      "noise_alpha": 0.2,
+      "bias_alpha": 0.1,
+      "steps": 240,
+      "sha256": "4c731a468d6da6cbfa94bf0f9ce0b1e4621039fc18c1b575b73f21836a2ca9da",
+      "focus_counts": {
+        "1": 55,
+        "2": 60,
+        "3": 72,
+        "4": 53
+      },
+      "focus_changes": 176
+    },
+    {
+      "label": "ct_other_global_seed",
+      "simulator_seed": 44004,
+      "target_seed": 424242,
+      "pid": 4,
+      "threshold_type": 1,
+      "noise_alpha": 0.0,
+      "bias_alpha": 0.0,
+      "steps": 240,
+      "sha256": "4c731a468d6da6cbfa94bf0f9ce0b1e4621039fc18c1b575b73f21836a2ca9da",
+      "focus_counts": {
+        "1": 55,
+        "2": 60,
+        "3": 72,
+        "4": 53
+      },
+      "focus_changes": 176
+    },
+    {
+      "label": "ct_other_target_seed",
+      "simulator_seed": 11001,
+      "target_seed": 424243,
+      "pid": 4,
+      "threshold_type": 1,
+      "noise_alpha": 0.0,
+      "bias_alpha": 0.0,
+      "steps": 240,
+      "sha256": "566ef38e1ee069c5b4d33acddfcb618117912409920a82dc4a3aa6a9f4d55db6",
+      "focus_counts": {
+        "1": 55,
+        "2": 64,
+        "3": 54,
+        "4": 67
+      },
+      "focus_changes": 159
+    }
+  ]
+}

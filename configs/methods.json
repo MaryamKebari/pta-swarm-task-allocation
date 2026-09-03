@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0",
+  "method_families": {
+    "CT": {
+      "full_name": "constant thresholds",
+      "simulator": {"Pid": 4},
+      "threshold_ranges": ["HM", "HT1", "HT2"],
+      "stored_threshold_modes": ["clamped"],
+      "gain_schemes": []
+    },
+    "LFTA": {
+      "full_name": "learning and forgetting threshold adaptation",
+      "simulator": {"Pid": 0},
+      "threshold_ranges": ["HM", "HT1", "HT2"],
+      "stored_threshold_modes": ["clamped"],
+      "gain_schemes": []
+    },
+    "SBTA": {
+      "full_name": "sign based threshold adaptation",
+      "simulator": {"Pid": 3},
+      "threshold_ranges": ["HM", "HT1", "HT2"],
+      "stored_threshold_modes": ["clamped"],
+      "gain_schemes": []
+    },
+    "SETA": {
+      "full_name": "single error threshold adaptation",
+      "simulator": {"Pid": 2},
+      "threshold_ranges": ["HM", "HT1", "HT2"],
+      "stored_threshold_modes": ["clamped", "latent"],
+      "gain_schemes": []
+    },
+    "PTA": {
+      "full_name": "proportional, integral, and derivative threshold adaptation",
+      "simulator": {"Pid": 1},
+      "threshold_ranges": ["HM", "HT1", "HT2"],
+      "stored_threshold_modes": ["clamped", "latent"],
+      "gain_schemes": ["Global", "Agent"]
+    }
+  },
+  "threshold_ranges": {
+    "HM": "one homogeneous interval shared by every agent and task",
+    "HT1": "heterogeneous intervals with agent level specialization",
+    "HT2": "heterogeneous intervals with agent and task variation"
+  },
+  "stored_threshold_modes": {
+    "clamped": "store the updated threshold inside its admissible range",
+    "latent": "retain the unconstrained stored value and clamp only the effective selection threshold"
+  },
+  "gain_schemes": {
+    "Global": "all agents use the same P, I, and D gains",
+    "Agent": "agent gains are reproducible perturbations around tuned base gains"
+  }
+}

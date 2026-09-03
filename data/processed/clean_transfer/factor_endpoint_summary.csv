@@ -1,0 +1,4 @@
+factor,low,high,matched_conditions,pta_R_lower_at_high,median_pta_R_ratio_high_to_low,advantage_larger_at_high,median_advantage_change_percentage_points
+pop,50.0,1000.0,36,34,0.8168844658808552,26,2.412380845225016
+n,4.0,12.0,48,48,0.4350108574438672,33,3.154789892611781
+step_ratio,1.5,2.5,48,48,0.3832220775711632,25,0.46619884152134095

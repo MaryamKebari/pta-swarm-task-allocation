@@ -1,0 +1,5 @@
+population,rms_between_run_sd_recruited_fraction,log_log_slope,log_log_slope_ci95_low,log_log_slope_ci95_high,log_log_slope_r_squared,representative_rep,representative_R,signed_arrival_recruitment_correlation,n500_correlation_median,n500_correlation_2.5pct,n500_correlation_97.5pct
+50,0.042348923757686494,-0.6041692008143729,-0.6579236492951009,-0.5504147523336448,0.9991455280501811,92.0,1.113832,0.9983722142158485,0.9981741370329509,0.9973550918978281,0.9984577140973384
+100,0.02675924521628842,,,,,,,,,,
+500,0.010091768928240978,,,,,,,,,,
+1000,0.006941453383532699,,,,,,,,,,

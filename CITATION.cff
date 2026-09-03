@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this software or processed data, please cite this repository and the accompanying paper."
+title: "PTA for Dynamic Swarm Task Allocation"
+type: software
+authors:
+  - family-names: Kebari
+    given-names: Maryam
+version: 0.1.0
+date-released: 2026-09-02
+repository-code: "https://github.com/MaryamKebari/pta-swarm-task-allocation"
+url: "https://github.com/MaryamKebari/pta-swarm-task-allocation"
+license: MIT
+keywords:
+  - swarm intelligence
+  - dynamic task allocation
+  - response thresholds
+  - feedback control
+  - multi-agent systems
+preferred-citation:
+  type: article
+  title: "Feedback Regulation of Threshold Adaptation for Dynamic Swarm Task Allocation"
+  authors:
+    - family-names: Kebari
+      given-names: Maryam
+

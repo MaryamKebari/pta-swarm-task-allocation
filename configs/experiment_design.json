@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0",
+  "paper_title": "Feedback Regulation of Threshold Adaptation for Dynamic Swarm Task Allocation",
+  "run_length_steps": 1000,
+  "repetitions": 100,
+  "reference_setting": {
+    "population": 500,
+    "tasks": 4,
+    "step_ratio": 2.0,
+    "demand_class": "iterative gradual"
+  },
+  "clean_feedback_grid": {
+    "population": [50, 100, 500, 1000],
+    "tasks": [4, 8, 12],
+    "step_ratio": [1.5, 2.0, 2.5],
+    "demand_class": [
+      "non-iterative gradual",
+      "non-iterative non-gradual",
+      "iterative gradual",
+      "iterative non-gradual"
+    ],
+    "operating_conditions": 144,
+    "configurations": 27,
+    "runs": 388800
+  },
+  "configuration_count": {
+    "CT": 3,
+    "LFTA": 3,
+    "SBTA": 3,
+    "SETA": 6,
+    "PTA": 12
+  },
+  "agent_removal": {
+    "removal_percent": [0, 5, 10, 20, 30, 40, 50],
+    "removal_step": 500,
+    "capacity_model": "removed capacity is lost",
+    "post_removal_window": [500, 999]
+  },
+  "imperfect_feedback": {
+    "population": 500,
+    "tasks": [4, 12],
+    "step_ratio": [1.5, 2.0, 2.5],
+    "demand_class": [
+      "non-iterative gradual",
+      "non-iterative non-gradual",
+      "iterative gradual",
+      "iterative non-gradual"
+    ],
+    "noise_alpha": [0.0, 0.05, 0.1, 0.2, 0.4],
+    "bias_beta": [0.0, 0.05, 0.1, 0.2],
+    "feedback_clipped": false
+  },
+  "tuning": {
+    "repetitions_per_trial": 20,
+    "trials": {
+      "LFTA": 100,
+      "SBTA": 100,
+      "SETA": 100,
+      "PTA_Global": 100,
+      "PTA_Agent": 240
+    },
+    "selection_metric": "R"
+  },
+  "metrics": [
+    "R",
+    "R_abs",
+    "R2",
+    "R2_norm",
+    "average_switch_count_excluding_idle",
+    "post_removal_R",
+    "post_removal_R_abs",
+    "post_removal_R2",
+    "post_removal_R2_norm"
+  ]
+}

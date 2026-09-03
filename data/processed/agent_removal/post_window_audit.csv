@@ -1,0 +1,9 @@
+source,kill_percent,post_removal_steps,reused_from_allocation,rows
+per_run_results.csv,0,0,1,388800
+per_run_results.csv,0,500,0,388800
+per_run_results.csv,5,500,0,388800
+per_run_results.csv,10,500,0,388800
+per_run_results.csv,20,500,0,388800
+per_run_results.csv,30,500,0,388800
+per_run_results.csv,40,500,0,388800
+per_run_results.csv,50,500,0,388800

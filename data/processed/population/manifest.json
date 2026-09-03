@@ -1,0 +1,27 @@
+{
+  "controller_source_sha256": "86ba010cdf4fe7d097fdfd3328331bddf54841efa4cdc547156cf809c54d35f9",
+  "configuration": "PTA-HT1, latent stored-threshold mode, Agent gains",
+  "gain_source": "data/parameters/reference_tuned_parameters.csv",
+  "seed_source": "data/raw/allocation_grid/per_run_results.csv",
+  "population": [
+    50,
+    100,
+    500,
+    1000
+  ],
+  "tasks": 4,
+  "step_ratio": 2.0,
+  "demand_class": "Iterative gradual",
+  "demand_code": "scurve",
+  "steps": 1000,
+  "repetitions": 100,
+  "gains": {
+    "P_gain": 0.0295194910484748,
+    "I_gain": 9.13572916777614e-07,
+    "D_gain": 0.0870353750631595,
+    "Agent_pid_p_spread": 0.0450843533230699,
+    "Agent_pid_i_spread": 0.270732996974337,
+    "Agent_pid_d_spread": 0.5198421826863027
+  },
+  "maximum_absolute_R_replay_difference": 0.0
+}

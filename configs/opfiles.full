@@ -1,0 +1,84 @@
+47
+# random always has to be first.  Rest of order doesn't matter
+random	1
+params	1
+# initial population (off by default)
+initpop	0
+# final population (off by default)
+finalpop	0
+# gnuplot files (off by default for CSV task-output mode)
+gnu	1
+# CSV summary of task-vector demand/allocation each timestep
+stepsummary	1
+# CSV summary of demand/service vector norms each timestep
+stepdemand	1
+# abstract task workload, arrival, and service by task id
+steptaskdemand	1
+# number of agents allocated to each task id in each timestep
+steptaskcounts	1
+# average per-task threshold and response probability in each timestep
+steptaskthresh	1
+# legacy 2D north/south path view; off for task-vector multitask mode
+stepnorthsouth	0
+# legacy 2D east/west path view; off for task-vector multitask mode
+stepeastwest	0
+# CSV task id selected by each agent in each timestep
+# one row for each timestep, all agent values printed in row
+# 0 = none; positive values are task ids 1..Num_tasks
+stepagentaction	1
+# same as above with timestep added in column 1 of each row
+stepagentactionwtime	0
+# CSV task id selected by each agent in each timestep
+# in x,y,z format for plotting using splot in gnuplot
+stepagentactionxyz	0
+# final statistics at end of run, including:
+# final task-vector norms and residuals
+finalstats	1
+# how much time each agent spent on each task
+finalagent	1
+# final summary for each abstract task id
+finaltask	1
+# target path
+steptargetpath	0
+# tracker path
+steptrackerpath	0
+# agent thresholds each step
+stepthresh	0
+stepthreshnorth	0
+stepthreshsouth	0
+stepthresheast	0
+stepthreshwest	0
+# agent threshold ranges
+threshrange	0
+# agent average intensities
+finalintensity	0
+# intensity distributions
+stephistnorth	0
+stephistsouth	0
+stephisteast	0
+stephistwest	0
+# intensity ranges
+intensityrange	0
+stepintensity	0
+stepintensitynorth	0
+stepintensityeast	0
+stepintensitysouth	0
+stepintensitywest	0
+# final agent thresholds and switch counts
+finalthreshswitch	0
+# final agent thresholds and action counts (TBD: sort by increasing total actions)
+finalthreshact	0
+# initial agent task response probabilities
+initprob	0
+# final agent task response probabilities
+finalprob	0
+# agent task probabilities in each step
+stepprobnorth	0
+stepprobsouth	0
+stepprobeast	0
+stepprobwest	0
+# minimum threshold task of each agent in each timestep
+# values are task ids 1..Num_tasks
+stepagentmintask	0
+# is an agent's action equal to its minimum task threshold
+stepagentmintaskaction	0

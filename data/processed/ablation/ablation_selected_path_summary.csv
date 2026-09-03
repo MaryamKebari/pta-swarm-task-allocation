@@ -1,0 +1,9 @@
+panel,path,added_term,comparison,effect_percent,ci95_low,ci95_high,units,units_with_lower_error,significant_units,unit_label,max_bh_q
+a,Iterative non-gradual,D,P $\rightarrow$ PD,65.86025842346325,45.41256199159287,73.11091837917361,8,8,8,conditions,8.767259651465797e-18
+a,Iterative non-gradual,D,PI $\rightarrow$ full PTA,66.11758011356392,45.14204410817643,73.09512317633828,8,8,8,conditions,8.767259651465797e-18
+b,Iterative non-gradual,I,P $\rightarrow$ PI,0.09728128543511373,-0.03942946373619649,0.4453633938582977,8,6,2,conditions,1.0
+b,Iterative non-gradual,I,PD $\rightarrow$ full PTA,-0.18027114557539164,-0.4308805419787012,0.14353119913327853,8,3,1,conditions,0.8863278350339985
+c,Sustained plateau,D,P $\rightarrow$ PD,0.0,0.0,0.0,100,0,0,repetitions,1.0
+c,Sustained plateau,D,PI $\rightarrow$ full PTA,0.0,0.0,0.0,100,0,0,repetitions,1.0
+d,Sustained plateau,I,P $\rightarrow$ PI,68.5226933210202,50.24845859249804,88.45278675611804,100,72,1,repetitions,1.9737074699647394e-11
+d,Sustained plateau,I,PD $\rightarrow$ full PTA,68.5226933210202,50.16279843550535,88.52038460493793,100,72,1,repetitions,1.9737074699647394e-11

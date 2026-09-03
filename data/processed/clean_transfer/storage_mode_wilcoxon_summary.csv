@@ -1,0 +1,7 @@
+comparison,threshold_range,tests,significant_q_lt_0_05,significant_latent_lower,significant_opposite,not_significant
+SETA storage mode,HM,144,140,49,91,4
+SETA storage mode,HT1,144,142,140,2,2
+SETA storage mode,HT2,144,140,140,0,4
+PTA storage mode,HM,288,284,218,66,4
+PTA storage mode,HT1,288,283,99,184,5
+PTA storage mode,HT2,288,288,72,216,0

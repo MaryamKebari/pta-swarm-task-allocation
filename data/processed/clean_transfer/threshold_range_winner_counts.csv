@@ -1,0 +1,15 @@
+demand_class,step_ratio,threshold_range,conditions_won
+Iterative gradual,1.5,HT1,12
+Iterative gradual,2.0,HT1,12
+Iterative gradual,2.5,HT2,12
+Iterative non-gradual,1.5,HT1,12
+Iterative non-gradual,2.0,HT1,12
+Iterative non-gradual,2.5,HM,3
+Iterative non-gradual,2.5,HT2,9
+Non-iterative gradual,1.5,HM,12
+Non-iterative gradual,2.0,HM,12
+Non-iterative gradual,2.5,HM,12
+Non-iterative non-gradual,1.5,HT1,12
+Non-iterative non-gradual,2.0,HT2,12
+Non-iterative non-gradual,2.5,HM,10
+Non-iterative non-gradual,2.5,HT2,2

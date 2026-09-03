@@ -1,0 +1,27 @@
+.DS_Store
+._*
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Compiled simulator artifacts
+simulator/src/*.o
+simulator/src/sim
+simulator/src/xx
+
+# Generated outputs
+build/
+figures/*.png
+figures/*.pdf
+data/raw/**
+!data/raw/.gitkeep
+
+# Local logs and editor state
+*.log
+*.tmp
+*.swp
+.idea/
+.vscode/
+

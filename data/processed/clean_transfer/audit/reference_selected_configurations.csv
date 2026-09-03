@@ -1,0 +1,6 @@
+pop,n,step_ratio,pattern,family,threshold_range,threshold_mode,gain_scheme,run_method_id,config_label,R,R_abs
+500,4,2.0,scurve,CT,HM,clamped,,CT|CT_HM|clamped|,CT-HM,1.8572758999999999,12.06916705
+500,4,2.0,scurve,LFTA,HM,clamped,,LFTA|TD1_PID0|clamped|,LFTA-HM,1.9415986799999998,11.050168710000001
+500,4,2.0,scurve,PTA,HT1,clamped,Agent,PTA|TD2_PID1|clamped|Agent,PTA-HT1-clamped-Agent,0.31815909000000003,11.02529857
+500,4,2.0,scurve,SBTA,HT2,clamped,,SBTA|SBTA_HT2|clamped|,SBTA-HT2,1.79017081,11.930324350000001
+500,4,2.0,scurve,SETA,HT1,latent,,SETA|SETA_HT1|latent|,SETA-HT1-latent,1.43624897,11.687082069999999

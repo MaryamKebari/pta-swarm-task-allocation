@@ -1,0 +1,6 @@
+family,run_method_id,conditions_won
+CT,CT|CT_HM|clamped|,5
+PTA,PTA|TD1_PID1|clamped|Global,1
+PTA,PTA|TD1_PID1|latent|Global,46
+PTA,PTA|TD2_PID1|clamped|Global,60
+PTA,PTA|TD3_PID1|clamped|Global,32
