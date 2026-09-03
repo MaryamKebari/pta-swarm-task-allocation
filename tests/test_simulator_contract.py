@@ -24,7 +24,9 @@ class SimulatorContractTests(unittest.TestCase):
 
     def test_feedback_is_not_clipped_by_default(self) -> None:
         defaults = (ROOT / "configs/params.default").read_text()
-        self.assertIn("Feedback_noise_clip 0", defaults)
+        globals_source = (ROOT / "simulator/src/global.h").read_text()
+        self.assertNotIn("Feedback_noise_clip 1", defaults)
+        self.assertIn("int Feedback_noise_clip;", globals_source)
 
 
 if __name__ == "__main__":

@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import csv
 import hashlib
 import json
 import re
@@ -10,6 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_FTRACKER = "86ba010cdf4fe7d097fdfd3328331bddf54841efa4cdc547156cf809c54d35f9"
+EXPECTED_PARAMS = "01d394af9229c4494247f429e5714f6088de4b17d80aa3591a4bcad3088d1156"
 REQUIRED = [
     "README.md",
     "LICENSE",
@@ -18,6 +20,7 @@ REQUIRED = [
     "configs/methods.json",
     "data/parameters/reference_tuned_parameters.csv",
     "data/manifests/source_hashes.json",
+    "data/manifests/simulator_source_sha256.csv",
     "docs/DATA.md",
     "docs/EXPERIMENTS.md",
     "docs/METHODS.md",
@@ -68,6 +71,25 @@ def main() -> None:
     source_hash = sha256(ROOT / "simulator/src/ftracker.c")
     if source_hash != EXPECTED_FTRACKER:
         raise SystemExit(f"ftracker.c provenance mismatch: {source_hash}")
+    params_hash = sha256(ROOT / "configs/params.default")
+    if params_hash != EXPECTED_PARAMS:
+        raise SystemExit(f"params.default provenance mismatch: {params_hash}")
+
+    with (ROOT / "data/manifests/simulator_source_sha256.csv").open(
+        newline="", encoding="utf-8"
+    ) as handle:
+        source_manifest = list(csv.DictReader(handle))
+    source_mismatches = []
+    for row in source_manifest:
+        path = ROOT / row["path"]
+        if not path.is_file():
+            source_mismatches.append(f"missing {row['path']}")
+        elif sha256(path) != row["sha256"]:
+            source_mismatches.append(f"changed {row['path']}")
+    if source_mismatches:
+        raise SystemExit(
+            "Simulator source provenance mismatch:\n" + "\n".join(source_mismatches)
+        )
 
     findings: list[str] = []
     for path in ROOT.rglob("*"):
@@ -87,7 +109,8 @@ def main() -> None:
         raise SystemExit("Portability or secret scan failed:\n" + "\n".join(findings))
 
     print(
-        f"PASS: repository contract, 144 condition grid, and source hash {source_hash[:12]}…"
+        "PASS: repository contract, 144 condition grid, "
+        f"and {len(source_manifest)} verified simulator source files"
     )
 
 

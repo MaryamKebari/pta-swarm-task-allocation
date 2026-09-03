@@ -1,288 +1,63 @@
-###
-# this is a comment line
-###
-# Note: this file cannot have blank lines at the end of the file.
-# That will cause a run time error.
 Rerun                   -1
-Run_num_file            run.num
-#
-### Printing params
-# output to screen
-Print_params            1
-### Printing status of run in each timestep
-#   1 = print output each timestep, 0 = don't
-Print_step              1
-#
-### Maximum number of time steps to run.
-Max_steps		200
-#
-### size of population of agents
-Pop_size = 1000
-### Number of selectable task channels.
-### Task ids are independent abstract task channels.
-### The tracker is a Num_tasks-dimensional service vector, not a 2D object.
-### No task id maps to north/east/south/west in multitask accounting.
-### Use values like 2, 4, 6, 8; maximum is 256.
-Num_tasks		4
-### Abstract task demand pattern:
-###   cyclic = smooth staggered workload waves, normalized across tasks
-###   random = random positive workload arrivals each step, normalized across tasks
-Task_demand_pattern	random
-### Vector error/demand interpretation for legacy_vector_* patterns:
-###   0 = relative task channels: demand is task error above the across-task mean
-###   1 = paired opposites: task 1 opposes 1+Num_tasks/2, task 2 opposes 2+Num_tasks/2, etc.
-###       For Num_tasks=4 this is task1/task3 and task2/task4, like old N/S and E/W.
-Task_opposition_mode	0
-#
-### How to initialize the thresholds of the agents in the population:
-#   <=1.0 = constant
-#   2.0 = uniform random
-#   3.0 = gaussian, standard normal distribution
-#   4.0 = poisson
-#   5.0 = exponential
-#   6.0 = logarithmic
-#   10.0 = from thresholds.txt
-Thresh_init 		2.0
-#
-###### individual Agent parameters
-### 20.04.16.ASW  Thresh_dynamic parameter
-### flag to turn on dynamic thresholds
-#   0 = off
-#   1 = on, max and min for each agent is [0.0,1.0]
-#   2 = on, min is randomly generated from [0.0,0.5]
-#           max is randomly generated from [0.5,1.0]
-#   3 = on, max and min for each agent generated using uniform distribution.
-#       If randomly generated values result in min>max, exchange the two values.
-Thresh_dynamic		3
-### Thresh_dynamic_init
-#   How to initialize thresholds for TD2 and TD3
-#   0 = uniform random
-#   1 = mid point of range
-#   2 = 0.5, only works for TD2
-Thresh_dynamic_init		0
-### Thresh_decrease and Thresh_increase
-#   These are absolute values, so they must be set with Range in mind.
-#   Amount by which threshold decreases when agent acts on a task.
+Print_params            0
+Print_step              0
+Max_steps                4000
+Thresh_init 		2
+Thresh_increase		0.1
 Thresh_decrease		0.1
-#   Amount by which threshold increases when agent does not act on a task.
-Thresh_increase		0.033
-#
-### Animate_thresh enables plotting how thresholds change each timestep.
-#   Turning this flag on will enable generation of one data file and one 
-#   gnuplot file per timestep for creating the animation of threshold versus
-#   action/switches.  These files are independent of opfiles, opfiles.default
-#   gnu.c.
-Animate_thresh		1
-### Animate_stepwise controls whether the animation runs automatically
-#   or manually, one timestep at a time, controlled by the user.
-#   1 = manual animation (user presses key to move to each next frame/timestep)
-#   0 = automatic (video like animation)
-Animate_stepwise	0
-#
-### Probability that agent will stop to reconsider what task to work on.
-#   If the agent does not stop to reconsider, then continues with current
-#   task.
-#   This parameter determines how agents will be assigned their own
-#   individual value of Agent[].prob_check.
-#   Values assigned to agents will range from 0.0 to 1.0.
-#   If Prob_check = 0.0, initialize each agent's prob_check field randomly
-#   else initialize all agents' prob_check fields to Prob_check.
-#   Once the agents have their own values for this parameter, it will
-#   determine the probability of them stopping to check for new tasks.
-#   For values of Agent[].prob_check lower than 0.1, the probability
-#   with which the agent stops to check will vary randomly in each timestep.
-Prob_check      1.0
-### How agent selects task if more than one task stimulus falls under the
-#   agent's corresponding threshold
-#   random = select randomly
-#   urgent = select the task that is most urgent
+Prob_check		1.0
 Task_selection		random
-### Target parameter
-### Target path specifies the path that the target will take
-#   Choices include:
-#      square
-#      square10
-#      circle
-#      random
-#      random_manhattan
-#      sharp      		straight lines with random sharp turns
-#      west			move west
-#      northeast		move northeast
-#      northeast_accel		move northeast and accelerate
-#      random		random task-space arrivals
-#      cyclic		staggered task-space arrival waves
-Target_path		zigzag
-### Task demand path parameters.
-#   random and cyclic generate abstract task workload across 1..Num_tasks.
-Demand_segment_len	200
-Demand_switch_step	500
-### Extra parameter for specifying the radius of the circle path.
-#   Only applies to the circle path.
-Circle_radius		30
-### Length of each step that target takes (type double).
-Target_step_len		1
-### Extra parameter specifying the side length for diamond and square paths.
-#   Only applies to the square and diamond paths.
-#   Even though Edge_length is defined as a double, it can only be an int.
-#   The Edge_length value should be greater than Target_step_len.
-Edge_length         10
-### Task-vector scale parameter
-### Range scales task thresholds and per-agent service capacity.
-### In multitask mode this is not a physical 2D radius.
+Circle_radius		10
+Path_amplitude		800
+Path_period		4000
+Animate_thresh		0
+Animate_stepwise	0
+Target_step_len		3
 Range			10
-### Ratio of tracker-max-step-len/target-step-len
-Step_ratio		1
-###
-### Path_amplitude and Path_period are stored in the amplitude and period
-#   fields of the TARGET structure.  They are only used for the zigzag and sine
-#   paths at this time.  191026AW.
-Path_amplitude		20
-Path_period		40
-### HDM; 2019.09.12
-### Intensity variation flag
-### Indicates if intensity variation is being used
-#   Values:
-#       0 - intensity variation is off
-#       1 - intensity variation is on; Homogeneous aging ranges
-#       2 - intensity variation is on; Heterogeneous aging ranges
-Intensity_variation     0
-###  Intensity aging indicates if each agent's intensity changes over time
-#   Values:
-#       0 - intensity aging is off
-#       1 - intensity aging is on
-Intensity_aging         0
-### Settings for intensity aging are real values
-Intensity_aging_min     0.5
-Intensity_aging_max     1.5
+Step_ratio		2.5
+Intensity_variation 0
+Intensity_aging     0
+Intensity_aging_min     1.0
+Intensity_aging_max     1.0
 Intensity_aging_up      0.075
 Intensity_aging_down    0.025
-#   Values:
-#       0 - midpt of range
-#       1 - Gaussian
-#       2 - Uniform
-Intensity_distribution  2
-Hetero_center_distr      1
-Hetero_radius_distr      1
-### Setting for heterogeneous ranges
-# range_max and range_min set the absolute bounds for agent's intensity range
-Hetero_range_max    2.0
-Hetero_range_min    0.0
-# radius_max is used for uniform distributions
-Hetero_radius_max   0.5
-Hetero_radius_min   0.25
-### Settings for Gaussian distributions
-Hetero_center_mu    1.0
-Hetero_center_std   0.15
-Hetero_radius_mu    0.5
-Hetero_radius_std   0.05
-### ASW 220521 Response_prob variable commented out in code
-### Replace with dynamic individual task response probabilities
-### HDM; 2019.10.24
-### Response probability
-#   Values:
-#       < 1.0 - homogeneous, agent fails to act with probability 1 - p
-#       1.0 - homogeneous, agent acts whenever threshold is met
-#       2.0 - heterogeneous, uniformly distributed in [0..1]
-#       3.0 - standard normal distribution
-#Response_prob   1.0
-### RP gaussian mu
-# Mean of standard distribution to use when Response_prob is set to 3.0
+Intensity_distribution 0
+Hetero_center_distr      2
+Hetero_radius_distr      2
+Hetero_range_max    2.2
+Hetero_range_min    0.3
+Hetero_radius_max   0.8
+Hetero_radius_min   0.3
+Hetero_center_mu    1.2
+Hetero_center_std   0.14
+Hetero_radius_mu    0.7
+Hetero_radius_std   0.14
 RP_gaussian_mu  0.7
-### RP gaussian std
-# Standard deviation of standard distribution to use when Response_prob is set to 3.0
-RP_gaussian_std 0.15
-### Number of agents to kill
-#   Values:
-#       0 - killing of agents is disabled
-#       > 0 - number of agents to kill
-Kill_number     10
-### Time step for first extinction
-### Not used if Kill_number = 0
-First_extinction    100
-### Period for extinctions
-#   Values:
-#       0 - repeated extinctions disabled
-#       > 0 - extinctions occur at increments of the specified value
-Extinction_period   20
-### Service capacity mode after agent removal
-#   Values:
-#       0 - survivor-normalized service: each living agent contributes max_step_len / Num_alive
-#       1 - capacity-loss service: each living agent contributes max_step_len / original Pop_size
-Removal_capacity_mode 0
-### NB; 2020.05.19
-### Spontaneous Response Probability
-#   The probability that an agent will act when their response threshold is not met
-#   Values:
-#       0.0 - Agents will never act when their response threshold is not met
-#       < 1.0 - Homogeneous; Agents will act (when their response threshold is not met) with probability p
-#       1.0 - Homogeneous/Heterogeneous (Depends on Response_prob); 
-#             Agents will act (when their response threshold is not met) with probability 1-Agent[i].response_prob
-#       2.0 - Heterogeneous; uniformly distributed in [0..1]
-#       3.0 - Standard normal distribution
-Spontaneous_response_prob 1.0
-### SRP gaussian mu
-# Mean of standard distribution to use when Spontaneous_response_prob is set to 3.0
-SRP_gaussian_mu  0.2
-### SRP gaussian std
-# Standard deviation of standard distribution to use when Spontaneous_response_prob is set to 3.0
-SRP_gaussian_std 0.15
-### Create the gnuplot plots for a given run, 1 = true, 0 = false
-Gnuplot_plots		0
-#
-#
-### ASW 2022.04.04 individual response probabilities for each task
-### and response probabilities that are dynamic
-### Prob_dynamic
-#   0 = static response probabilities
-#   1 = dynamic response probabilities
+RP_gaussian_std   0.15
+Spontaneous_response_prob 0.0
+First_extinction    600
+Extinction_period   1000
+Gnuplot_plots		0 
 Prob_dynamic		0
-### Prob_dynamic_init
-#   how to initialize the prob_<direction> fields of the Agent structure
-#   <= 1.0 initalize all agents and all directions to Prob_dynamic_init
-#   2.0  initialize randomly (uniform random) between 0.0 and 1.0
 Prob_dynamic_init	1.0
-### Prob_increase
-#   how much to increase prob_<direction> if agent acts on <direction>
-#   in the current timestep
 Prob_increase		0.03
-### Prob_decrease
-#   how much to decrease prob_<direction> if agent does not act on <direction>
-#   in the current timestep
 Prob_decrease		0.01
-### Prob_idle_increase
-#   how much to increase prob_<direction> if agent is idle
-#   in the current timestep
-Prob_idle_increase	0.01
-### Prob_dynamic_max and Prob_dynamic_min
-#   range of possible response probability values
+Prob_idle_increase	0.005
 Prob_dynamic_min	0.0
 Prob_dynamic_max	1.0
-#PID parameters
-P_gain	0.01
-D_gain	0.43
-I_gain	0
-Pid	1
+P_gain	0.0008
+I_gain	0.00001
+Pop_size                500
+Num_tasks               4
+Task_demand_pattern	random
+Task_opposition_mode	1
+Kill_number                0
+Target_path		random
+Thresh_dynamic            1
+Pid     1
 Pid_latent_thresholds 1
-### PTA integral memory. A leak below 1 discounts older errors; the bound
-### prevents unbounded accumulation. These are the paper values.
-Pid_integral_leak 0.99
-Pid_integral_bound 500
-### Gain scheme. Set to 0 for Global gains and 1 for Agent gains.
-Agent_pid_gains 0
-Agent_pid_gain_spread 0
-Agent_pid_p_spread 0
-Agent_pid_i_spread 0
-Agent_pid_d_spread 0
-Agent_pid_gain_apply_id 1
-### Imperfect feedback is disabled in the clean evaluation.
-Feedback_noise_enabled 0
-Feedback_noise_alpha 0
-Feedback_noise_seed 778899
-Feedback_noise_sigma_mode mean_active_task_demand
-Feedback_noise_clip 0
-Feedback_bias_alpha 0
-Feedback_bias_seed 998877
-Feedback_bias_mode none
+D_gain	0.15
 FixedTargetPath 1
-TargetPathSeed 42
-Output_path             output
+TargetPathSeed 15050
+Demand_segment_len	200
+Demand_switch_step	500
