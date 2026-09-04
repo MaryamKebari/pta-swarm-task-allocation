@@ -61,6 +61,4 @@ threshold mode, gain scheme, and the selected update parameters. The
 
 ## Data integrity
 
-Run `make verify` to check the experiment grid and source provenance. Run
-`make checksums` to regenerate `CHECKSUMS.sha256` after an intentional data or
-code update.
+Run `make verify` to check the experiment grid and source provenance.

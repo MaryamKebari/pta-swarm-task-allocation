@@ -84,5 +84,4 @@ The final campaign audit files are retained in `data/manifests`.
 ## Environment capture
 
 For an archival release, record the compiler version, operating system, Python
-version, installed packages, commit hash, and `CHECKSUMS.sha256`. A tagged GitHub
-release can then be archived with Zenodo to obtain a DOI.
+version, installed packages, and commit hash.

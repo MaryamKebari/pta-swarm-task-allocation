@@ -1,4 +1,4 @@
-.PHONY: build clean smoke campaign-smoke tuning-smoke test figures verify paper-audit checksums
+.PHONY: build clean smoke campaign-smoke tuning-smoke test figures verify paper-audit
 
 PYTHON ?= python3
 
@@ -29,6 +29,3 @@ verify:
 
 paper-audit: build smoke test verify figures
 	@echo "PASS: paper code, processed data, and figures are consistent"
-
-checksums:
-	$(PYTHON) scripts/write_checksums.py

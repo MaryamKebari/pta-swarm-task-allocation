@@ -67,12 +67,11 @@ tables preserve every value used in the paper.
 | 14 and 15 | gain scheme tables | `analysis/clean_transfer/analyze_implementation_transfer.py`; `analyze_design_wilcoxon.py` |
 | 16 and 17 | derivative and integral role figures | `analysis/ablation/make_controller_ablation_term_roles.py`; `analysis/generate_paper_figures.py` |
 | 18 | selected controller removal table | `analysis/generate_paper_figures.py` |
-| 19 through 21 | removal figures | `analysis/agent_removal/audit_and_analyze.py`; `analysis/generate_paper_figures.py` |
+| 19 through 21 | removal figures | `analysis/generate_paper_figures.py` |
 | 22 and 23 | selected controller feedback tables | `analysis/generate_paper_figures.py` |
 | 24 and 25 | feedback heatmaps | `analysis/imperfect_feedback/analyze_imperfect_feedback_results.py` |
 | 26 | strongest feedback raw residual table | `analysis/imperfect_feedback/analyze_imperfect_feedback_results.py` |
 
-Run `make figures` to regenerate every committed paper facing figure from the
-processed data. Run `make paper-audit` to validate the method set, seed maps,
-source hashes, processed tables, and archived numerical regression values with
-a small cross platform tolerance.
+Run `make figures` to regenerate the paper figures from the processed data.
+Run `make test` to check method definitions, seed maps, and archived numerical
+values.

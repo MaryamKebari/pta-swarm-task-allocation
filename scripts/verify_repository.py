@@ -27,7 +27,6 @@ REQUIRED = [
     "docs/METHODS.md",
     "docs/PAPER_TRACEABILITY.md",
     "docs/PROVENANCE.md",
-    "docs/README.md",
     "docs/REPRODUCIBILITY.md",
     "experiments/run_campaign.py",
     "experiments/tune_reference.py",
