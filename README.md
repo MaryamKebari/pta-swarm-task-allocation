@@ -146,9 +146,4 @@ Use GitHub's **Cite this repository** menu or the metadata in
 [`CITATION.cff`](CITATION.cff). Until the article has final bibliographic
 details, please cite the software release and the accompanying manuscript.
 
-## License
 
-The code is available under the [MIT License](LICENSE). It may be used,
-modified, and redistributed as long as the copyright and license notice are
-retained. The software is provided without a warranty. Academic citation is
-requested separately through [`CITATION.cff`](CITATION.cff).
