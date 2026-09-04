@@ -59,16 +59,24 @@ the paper plots from `data/processed`. `make verify` checks source hashes.
 ## Layout
 
 ```text
-simulator/src     C simulator used in the paper
-configs/          method and experiment settings
-experiments/      campaign runners
-data/processed/   compact tables for figures and tests
-analysis/         statistics and plotting
-docs/             method and reproduction notes
+simulator/            C simulator used in the paper
+configs/              method and experiment settings
+experiments/          run the paper studies
+analysis/             tables and figures, same names as the studies
+data/processed/       compact results, same names as the studies
+  allocation/         allocation accuracy
+  ablation/           integral and derivative terms
+  removal/            agent removal
+  feedback/           noise and bias
+  population/         recruitment diagnostic
+data/seeds/           exact campaign seeds
+data/parameters/      selected tuned parameters
+docs/                 method and reproduction notes
 ```
 
 [`simulator/README.md`](simulator/README.md) maps each C file to its role.
 [`experiments/README.md`](experiments/README.md) documents full campaign runs.
+[`analysis/README.md`](analysis/README.md) lists the analysis scripts.
 
 ## Experiments
 

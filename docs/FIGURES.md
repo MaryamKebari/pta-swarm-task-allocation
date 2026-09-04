@@ -10,21 +10,21 @@ Dashed zero or equality lines are neutral references, not fitted trends.
 
 | File in `figures/` | Claim | Script | Source tables |
 |---|---|---|---|
-| `demand_class_pta_advantage` | PTA's advantage varies with demand structure | `analysis/generate_paper_figures.py` | `data/processed/clean_transfer/` |
-| `step_ratio_pta_error` | Absolute error changes with capacity | `analysis/generate_paper_figures.py` | `data/processed/clean_transfer/` |
-| `step_ratio_pta_advantage` | PTA's relative advantage is smallest at the highest tested capacity | `analysis/generate_paper_figures.py` | `data/processed/clean_transfer/` |
-| `population_pta_advantage` | The advantage persists across population sizes | `analysis/generate_paper_figures.py` | `data/processed/clean_transfer/population_task_scaling_summary.csv` |
-| `task_count_pta_advantage` | The advantage persists across task counts | `analysis/generate_paper_figures.py` | `data/processed/clean_transfer/population_task_scaling_summary.csv` |
-| `threshold_range_preference` | Preferred threshold range depends on demand class and step ratio | `analysis/generate_paper_figures.py` | `data/processed/clean_transfer/winner_by_condition.csv` |
-| `frozen_reference_winner_atlas` | The preferred PTA configuration changes across the grid | `analysis/clean_transfer/make_frozen_winner_atlas.py` | `data/processed/clean_transfer/` |
-| `integral_term_role` | Integral action matters for persistent error | `analysis/generate_paper_figures.py` | `data/processed/ablation/ablation_selected_path_summary.csv` |
-| `derivative_term_role` | Derivative action matters for rapid reversals | `analysis/generate_paper_figures.py` | `data/processed/ablation/ablation_selected_path_summary.csv` |
-| `population_mechanism_diagnostic` | Recruitment variability changes with population size | `analysis/population/plot_population_mechanism_diagnostic.py` | `data/processed/population/` |
-| `agent_removal_deterioration` | Error rises as agents and capacity are removed | `analysis/generate_paper_figures.py` | `data/processed/agent_removal/pta_degradation_by_step_ratio.csv` |
-| `agent_removal_paired_advantage` | PTA retains a paired-imbalance advantage after removal | `analysis/generate_paper_figures.py` | `data/processed/agent_removal/pta_comparator_summary.csv` |
-| `agent_removal_raw_advantage` | PTA retains a raw-residual advantage after removal | `analysis/generate_paper_figures.py` | `data/processed/agent_removal/pta_comparator_summary.csv` |
-| `imperfect_feedback_pta_comparators` | PTA retains a relative advantage under noise and bias | `analysis/imperfect_feedback/analyze_imperfect_feedback_results.py` | `data/processed/imperfect_feedback/` |
-| `imperfect_feedback_own_clean` | Degradation relative to each method's own clean-feedback result | `analysis/imperfect_feedback/analyze_imperfect_feedback_results.py` | `data/processed/imperfect_feedback/` |
+| `demand_class_pta_advantage` | PTA's advantage varies with demand structure | `analysis/figures.py` | `data/processed/allocation/` |
+| `step_ratio_pta_error` | Absolute error changes with capacity | `analysis/figures.py` | `data/processed/allocation/` |
+| `step_ratio_pta_advantage` | PTA's relative advantage is smallest at the highest tested capacity | `analysis/figures.py` | `data/processed/allocation/` |
+| `population_pta_advantage` | The advantage persists across population sizes | `analysis/figures.py` | `data/processed/allocation/population_task_scaling_summary.csv` |
+| `task_count_pta_advantage` | The advantage persists across task counts | `analysis/figures.py` | `data/processed/allocation/population_task_scaling_summary.csv` |
+| `threshold_range_preference` | Preferred threshold range depends on demand class and step ratio | `analysis/figures.py` | `data/processed/allocation/winner_by_condition.csv` |
+| `frozen_reference_winner_atlas` | The preferred PTA configuration changes across the grid | `analysis/allocation/winner_atlas.py` | `data/processed/allocation/` |
+| `integral_term_role` | Integral action matters for persistent error | `analysis/figures.py` | `data/processed/ablation/ablation_selected_path_summary.csv` |
+| `derivative_term_role` | Derivative action matters for rapid reversals | `analysis/figures.py` | `data/processed/ablation/ablation_selected_path_summary.csv` |
+| `population_mechanism_diagnostic` | Recruitment variability changes with population size | `analysis/population/plot.py` | `data/processed/population/` |
+| `agent_removal_deterioration` | Error rises as agents and capacity are removed | `analysis/figures.py` | `data/processed/removal/pta_degradation_by_step_ratio.csv` |
+| `agent_removal_paired_advantage` | PTA retains a paired-imbalance advantage after removal | `analysis/figures.py` | `data/processed/removal/pta_comparator_summary.csv` |
+| `agent_removal_raw_advantage` | PTA retains a raw-residual advantage after removal | `analysis/figures.py` | `data/processed/removal/pta_comparator_summary.csv` |
+| `imperfect_feedback_pta_comparators` | PTA retains a relative advantage under noise and bias | `analysis/feedback/compare.py` | `data/processed/feedback/` |
+| `imperfect_feedback_own_clean` | Degradation relative to each method's own clean-feedback result | `analysis/feedback/compare.py` | `data/processed/feedback/` |
 
 Each stem is written as both `.pdf` and `.png`.
 

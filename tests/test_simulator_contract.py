@@ -74,7 +74,7 @@ class SimulatorContractTests(unittest.TestCase):
         )
 
     def test_feedback_is_not_clipped_by_default(self) -> None:
-        runner = (ROOT / "experiments/run_campaign.py").read_text()
+        runner = (ROOT / "experiments/run.py").read_text()
         smoke = (ROOT / "configs/smoke.params").read_text()
         self.assertIn('"Feedback_noise_clip": 0', runner)
         self.assertIn("Feedback_noise_clip 0", smoke)

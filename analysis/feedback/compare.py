@@ -2,7 +2,7 @@
 """Analyze the audited frozen-reference imperfect-feedback grid.
 
 The script uses the 100-repetition condition means produced by
-``audit_and_summarize.py``.  Effects are expressed as log ratios before
+``summarize.py``.  Effects are expressed as log ratios before
 aggregation so that improvements and degradations have a symmetric scale.
 Bootstrap intervals resample operating conditions as clusters and retain all
 associated configurations, thereby preserving the dependence created by
@@ -20,7 +20,7 @@ import pandas as pd
 from matplotlib.colors import TwoSlopeNorm
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-HERE = REPO_ROOT / "data" / "processed" / "imperfect_feedback"
+HERE = REPO_ROOT / "data" / "processed" / "feedback"
 INPUT = HERE / "condition_means.csv"
 FIGURE_DIR = REPO_ROOT / "figures"
 FIGURE_DIR.mkdir(parents=True, exist_ok=True)

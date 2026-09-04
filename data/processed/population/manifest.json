@@ -2,7 +2,7 @@
   "controller_source_sha256": "86ba010cdf4fe7d097fdfd3328331bddf54841efa4cdc547156cf809c54d35f9",
   "configuration": "PTA-HT1, latent stored-threshold mode, Agent gains",
   "gain_source": "data/parameters/reference_tuned_parameters.csv",
-  "seed_source": "data/raw/allocation_grid/per_run_results.csv",
+  "seed_source": "data/raw/allocation/per_run_results.csv",
   "population": [
     50,
     100,

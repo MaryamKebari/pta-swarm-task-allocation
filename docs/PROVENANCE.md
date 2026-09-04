@@ -17,10 +17,10 @@ four recorded final corrections: the selector stimulus derivative, required
 metrics, switch counting, and independent random demand stream. Every compiled
 C source file, header, and the Makefile in the reconstructed tree matches the
 curated simulator byte for byte. Their hashes are recorded in
-`data/manifests/simulator_source_sha256.csv` and checked by `make verify`.
+`data/provenance/simulator_source_sha256.csv` and checked by `make verify`.
 
 The complete campaign hash record is preserved in
-`data/manifests/source_hashes.json`. The public `configs/params.default` is the
+`data/provenance/source_hashes.json`. The public `configs/params.default` is the
 exact final campaign base parameter snapshot and is also checked by
 `make verify`. The 27 rows in
 `data/parameters/reference_tuned_parameters.csv` are also byte for byte

@@ -20,8 +20,8 @@ The public selections are in
 `data/parameters/reference_tuned_parameters.csv`. The trial budgets are recorded
 in `configs/experiment_design.json` and reflect the paper protocol. The complete
 Optuna TPE implementation and declared search spaces are in
-`experiments/tune_reference.py`; all configurations use the same 20 seeds from
-`data/manifests/tuning_seed_map.csv`.
+`experiments/tune.py`; all configurations use the same 20 seeds from
+`data/seeds/tuning_seed_map.csv`.
 
 ## Clean feedback allocation grid
 
@@ -45,9 +45,9 @@ derivative action. Repeated reversal demand is used to expose response to rapid
 changes. Plateau demand is used to expose persistent error. The comparison uses
 the same underlying full PTA gains, with omitted terms set to zero.
 
-The repeated reversal grid is produced by `experiments/run_campaign.py
+The repeated reversal grid is produced by `experiments/run.py
 ablation`. The sustained plateau is a focused directional diagnostic whose raw
-file can be supplied to `analysis/ablation/make_controller_ablation_term_roles.py`
+file can be supplied to `analysis/ablation/term_roles.py`
 with `PTA_PLATEAU_ABLATION_CSV`.
 
 ## Agent removal
@@ -71,4 +71,4 @@ Within an operating condition and repetition, methods share simulation and
 target path seeds. Random demand uses a dedicated stream initialized from
 `TargetPathSeed` after parameter files are read. Imperfect feedback uses matched
 standardized noise draws and bias signs. The runtime audit in
-`data/manifests/random_path_runtime_audit.json` verifies the random path contract.
+`data/provenance/random_path_runtime_audit.json` verifies the random path contract.

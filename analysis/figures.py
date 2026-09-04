@@ -8,6 +8,8 @@ rerun simulations or change any reported result.
 
 from __future__ import annotations
 
+import subprocess
+import sys
 from pathlib import Path
 
 import matplotlib
@@ -20,10 +22,9 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 ANALYSIS = ROOT / "data" / "processed"
 FIGURES = ROOT / "figures"
-CLEAN = ANALYSIS / "clean_transfer"
-CLEAN_AUDIT = CLEAN / "audit"
-REMOVAL = ANALYSIS / "agent_removal"
-FEEDBACK = ANALYSIS / "imperfect_feedback"
+ALLOCATION = ANALYSIS / "allocation"
+REMOVAL = ANALYSIS / "removal"
+FEEDBACK = ANALYSIS / "feedback"
 ABLATION = ANALYSIS / "ablation"
 
 PTA_BLUE = "#0072B2"
@@ -113,8 +114,8 @@ def paired_summary(
 
 
 def factor_effects() -> pd.DataFrame:
-    pta = pd.read_csv(CLEAN_AUDIT / "conditionwise_preferred_pta.csv")
-    alternative = pd.read_csv(CLEAN_AUDIT / "conditionwise_best_alternative.csv")
+    pta = pd.read_csv(ALLOCATION / "conditionwise_preferred_pta.csv")
+    alternative = pd.read_csv(ALLOCATION / "conditionwise_best_alternative.csv")
     keys = ["pop", "n", "step_ratio", "pattern"]
     paired = pta[keys + ["R"]].merge(
         alternative[keys + ["R"]], on=keys, suffixes=("_pta", "_alternative")
@@ -145,7 +146,7 @@ def factor_effects() -> pd.DataFrame:
                 }
             )
     result = pd.DataFrame(rows)
-    result.to_csv(CLEAN / "conclusion_specific_factor_summary.csv", index=False)
+    result.to_csv(ALLOCATION / "conclusion_specific_factor_summary.csv", index=False)
     return result
 
 
@@ -253,7 +254,7 @@ def plot_step_effects(summary: pd.DataFrame) -> None:
 
 
 def plot_scaling() -> None:
-    summary = pd.read_csv(CLEAN / "population_task_scaling_summary.csv")
+    summary = pd.read_csv(ALLOCATION / "population_task_scaling_summary.csv")
     specs = [
         (
             "pop",
@@ -310,7 +311,7 @@ def plot_scaling() -> None:
 
 
 def plot_threshold_range_preference() -> None:
-    winners = pd.read_csv(CLEAN / "winner_by_condition.csv")
+    winners = pd.read_csv(ALLOCATION / "winner_by_condition.csv")
     counts = (
         winners.groupby(["pattern", "step_ratio", "threshold_range"])
         .size()
@@ -629,6 +630,38 @@ def make_selected_configuration_tables() -> None:
     )
 
 
+def extra_figures() -> None:
+    """Paper figures produced by experiment-specific scripts."""
+    subprocess.run(
+        [sys.executable, "analysis/allocation/winner_atlas.py"],
+        cwd=ROOT,
+        check=True,
+    )
+    subprocess.run(
+        [sys.executable, "analysis/feedback/compare.py"],
+        cwd=ROOT,
+        check=True,
+    )
+    subprocess.run(
+        [
+            sys.executable,
+            "analysis/population/plot.py",
+            "--trajectories",
+            "data/processed/population/population_mechanism_trajectories.npz",
+            "--validation",
+            "data/processed/population/replay_validation.csv",
+            "--out",
+            "figures/population_mechanism_diagnostic.pdf",
+            "--summary",
+            "data/processed/population/population_mechanism_summary.csv",
+            "--representative",
+            "data/processed/population/representative_timeseries.csv",
+        ],
+        cwd=ROOT,
+        check=True,
+    )
+
+
 def main() -> None:
     configure_style()
     factors = factor_effects()
@@ -640,7 +673,8 @@ def main() -> None:
     plot_term_role("I", "#009E73", "integral_term_role")
     plot_removal()
     make_selected_configuration_tables()
-    print("Wrote conclusion-specific summaries and figures.")
+    extra_figures()
+    print("Wrote paper figures to figures/")
 
 
 if __name__ == "__main__":

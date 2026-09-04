@@ -52,6 +52,6 @@ custom runs, start from `configs/params.default` and override only the settings
 required by the experiment.
 
 Paper campaigns should be launched through
-[`experiments/run_campaign.py`](../experiments/run_campaign.py) rather than by
+[`experiments/run.py`](../experiments/run.py) rather than by
 calling `sim` by hand, so that seeds, parameter snapshots, and output columns
 stay matched.

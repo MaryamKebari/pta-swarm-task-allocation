@@ -10,22 +10,22 @@ clean:
 	rm -rf build
 
 smoke: build
-	$(PYTHON) scripts/run_smoke.py
+	$(PYTHON) experiments/smoke.py
 
 campaign-smoke: build
-	$(PYTHON) experiments/run_campaign.py clean --smoke --overwrite --output build/campaign-smoke/per_run_results.csv
+	$(PYTHON) experiments/run.py allocation --smoke --overwrite --output build/campaign-smoke/per_run_results.csv
 
 tuning-smoke: build
-	$(PYTHON) experiments/tune_reference.py --smoke --output build/tuning-smoke
+	$(PYTHON) experiments/tune.py --smoke --output build/tuning-smoke
 
 test:
 	$(PYTHON) -m unittest discover -s tests -v
 
 figures:
-	$(PYTHON) scripts/make_figures.py
+	$(PYTHON) analysis/figures.py
 
 verify:
-	$(PYTHON) scripts/verify_repository.py
+	$(PYTHON) tests/verify_repository.py
 
 paper-audit: build smoke test verify figures
 	@echo "PASS: paper code, processed data, and figures are consistent"

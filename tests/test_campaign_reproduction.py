@@ -8,11 +8,11 @@ import unittest
 from pathlib import Path
 
 from experiments.definitions import load_method_configurations
-from experiments.run_campaign import Job, simulator_overrides
-from experiments.simulator import SIMULATOR, run_simulation
+from experiments.run import Job, simulator_overrides
+from experiments.run_sim import SIMULATOR, run_simulation
 
 ROOT = Path(__file__).resolve().parents[1]
-GOLDEN = ROOT / "data" / "manifests" / "golden_smoke_results.csv"
+GOLDEN = ROOT / "tests" / "golden_smoke_results.csv"
 METRICS = ["R", "R_abs", "R2", "R2_norm", "R2_max_norm", "avg_switch_noidle"]
 
 
@@ -50,7 +50,7 @@ class CampaignReproductionTests(unittest.TestCase):
                     config.run_method_id, expected[family]["run_method_id"]
                 )
                 stats = run_simulation(
-                    simulator_overrides(Job("clean", config, seed_row, {})),
+                    simulator_overrides(Job("allocation", config, seed_row, {})),
                     seed=int(seed_row["seed"]),
                 )
                 for metric in METRICS:

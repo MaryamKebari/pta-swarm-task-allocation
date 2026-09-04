@@ -1,64 +1,55 @@
 # Data guide
 
-## Included data
+Processed tables are grouped by the same experiment names as `analysis/`
+and `experiments/run.py`.
 
-The repository commits compact processed results used by the statistical
-analyses and figures. They are grouped by experiment:
+| Directory | Contents |
+|---|---|
+| `data/processed/allocation/` | method comparison, winners, Wilcoxon tests |
+| `data/processed/ablation/` | P, I, and D term summaries |
+| `data/processed/population/` | recruitment diagnostic |
+| `data/processed/removal/` | post-removal means and degradation |
+| `data/processed/feedback/` | noise and bias summaries |
+| `data/parameters/` | selected reference-tuned parameters |
+| `data/seeds/` | exact campaign seeds |
+| `data/provenance/` | simulator hashes and runtime audits |
+| `data/raw/` | optional large per-run CSVs, not in Git |
 
-| Directory | Examples | Interpretation |
-|---|---|---|
-| `clean_transfer` | range matched summaries, winner tables, Wilcoxon tests | Clean feedback comparison and design factors |
-| `ablation` | direct and persistent term summaries | P, I, and D roles |
-| `population` | replay validation and trajectories | Recruitment scaling diagnostic |
-| `agent_removal` | post window means, degradation, comparator summaries | Performance after removal |
-| `imperfect_feedback` | condition means and severity summaries | Noise and bias robustness |
-
-Every CSV uses a header row. Counts, aggregation units, and statistical columns
-are kept in the files rather than inferred from filenames.
+Every CSV uses a header row.
 
 ## Raw data layout
 
-The per run files are too large for ordinary Git hosting. To repeat analyses
-from raw output, place them at:
+To rebuild summaries from raw output, place files at:
 
 ```text
 data/raw/
-├── allocation_grid/per_run_results.csv
-├── controller_ablation/per_run_results.csv
-├── agent_removal/per_run_results.csv
-├── agent_removal_zero_post_control/per_run_results.csv
-└── imperfect_feedback/per_run_results.csv
+├── allocation/per_run_results.csv
+├── ablation/per_run_results.csv
+├── ablation/plateau_metrics.csv
+├── removal/per_run_results.csv
+└── feedback/per_run_results.csv
 ```
 
-The analysis entry points also accept these environment variables:
+Environment variables accepted by the analysis scripts:
 
 | Variable | Raw file |
 |---|---|
-| `PTA_ALLOCATION_CSV` | clean feedback allocation grid |
-| `PTA_ABLATION_CSV` | crossed controller ablation |
+| `PTA_ALLOCATION_CSV` | allocation grid |
+| `PTA_ABLATION_CSV` | term ablation |
 | `PTA_PLATEAU_ABLATION_CSV` | plateau diagnostic, when separate |
-| `PTA_REMOVAL_CSV` | agent removal runs |
-| `PTA_FEEDBACK_CSV` | imperfect feedback runs |
-
-Large raw files should be published as a release asset or archival dataset, not
-committed directly to Git history.
+| `PTA_REMOVAL_CSV` | agent removal |
+| `PTA_FEEDBACK_CSV` | imperfect feedback |
 
 ## Seed maps
 
-`data/manifests/allocation_seed_map.csv` contains the 14,400 exact validation
-seed pairs used for the 144 clean feedback conditions and 100 repetitions.
-`imperfect_feedback_seed_map.csv` adds the noise and bias seeds for its 24
-conditions. `tuning_seed_map.csv` contains the 20 shared tuning seeds. The
-campaign runners read these files directly; they do not generate replacement
+`data/seeds/allocation_seed_map.csv` has the 14,400 validation seed pairs for
+the 144 allocation conditions. `data/seeds/feedback_seed_map.csv` adds matched
+noise and bias seeds. `data/seeds/tuning_seed_map.csv` has the 20 shared
+tuning seeds. Campaign runners read these files; they do not draw replacement
 seeds at runtime.
 
 ## Parameter table
 
-`data/parameters/reference_tuned_parameters.csv` contains one row for every
-configuration. The core columns identify method family, threshold range, stored
-threshold mode, gain scheme, and the selected update parameters. The
-`source_row` column preserves the complete original tuning record for audit.
-
-## Data integrity
+`data/parameters/reference_tuned_parameters.csv` has one row per configuration.
 
 Run `make verify` to check the experiment grid and source provenance.

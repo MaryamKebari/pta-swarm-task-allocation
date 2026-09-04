@@ -27,13 +27,13 @@ FIGURE_DIR = ROOT / "figures"
 FULL_GRID_RUNS = Path(
     os.environ.get(
         "PTA_ABLATION_CSV",
-        ROOT / "data" / "raw" / "controller_ablation" / "per_run_results.csv",
+        ROOT / "data" / "raw" / "ablation" / "per_run_results.csv",
     )
 )
 PLATEAU_RUNS = Path(
     os.environ.get(
         "PTA_PLATEAU_ABLATION_CSV",
-        ROOT / "data" / "raw" / "controller_ablation" / "plateau_metrics.csv",
+        ROOT / "data" / "raw" / "ablation" / "plateau_metrics.csv",
     )
 )
 

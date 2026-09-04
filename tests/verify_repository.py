@@ -19,8 +19,8 @@ REQUIRED = [
     "configs/experiment_design.json",
     "configs/methods.json",
     "data/parameters/reference_tuned_parameters.csv",
-    "data/manifests/source_hashes.json",
-    "data/manifests/simulator_source_sha256.csv",
+    "data/provenance/source_hashes.json",
+    "data/provenance/simulator_source_sha256.csv",
     "docs/DATA.md",
     "docs/EXPERIMENTS.md",
     "docs/FIGURES.md",
@@ -28,8 +28,9 @@ REQUIRED = [
     "docs/PAPER_TRACEABILITY.md",
     "docs/PROVENANCE.md",
     "docs/REPRODUCIBILITY.md",
-    "experiments/run_campaign.py",
-    "experiments/tune_reference.py",
+    "analysis/figures.py",
+    "experiments/run.py",
+    "experiments/tune.py",
     "simulator/src/ftracker.c",
 ]
 TEXT_SUFFIXES = {".c", ".h", ".py", ".md", ".json", ".toml", ".yml", ".yaml", ".txt"}
@@ -62,7 +63,7 @@ def main() -> None:
 
     with (ROOT / "configs/experiment_design.json").open(encoding="utf-8") as handle:
         design = json.load(handle)
-    grid = design["clean_feedback_grid"]
+    grid = design["allocation"]
     computed = (
         len(grid["population"])
         * len(grid["tasks"])
@@ -79,7 +80,7 @@ def main() -> None:
     if params_hash != EXPECTED_PARAMS:
         raise SystemExit(f"params.default provenance mismatch: {params_hash}")
 
-    with (ROOT / "data/manifests/simulator_source_sha256.csv").open(
+    with (ROOT / "data/provenance/simulator_source_sha256.csv").open(
         newline="", encoding="utf-8"
     ) as handle:
         source_manifest = list(csv.DictReader(handle))

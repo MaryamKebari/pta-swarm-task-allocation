@@ -28,16 +28,16 @@ from experiments.definitions import (
     filter_configurations,
     load_method_configurations,
 )
-from experiments.simulator import run_simulation
+from experiments.run_sim import run_simulation
 
 ROOT = Path(__file__).resolve().parents[1]
-SEED_MAP = ROOT / "data" / "manifests" / "allocation_seed_map.csv"
-FEEDBACK_SEED_MAP = ROOT / "data" / "manifests" / "imperfect_feedback_seed_map.csv"
+SEED_MAP = ROOT / "data" / "seeds" / "allocation_seed_map.csv"
+FEEDBACK_SEED_MAP = ROOT / "data" / "seeds" / "feedback_seed_map.csv"
 DEFAULT_OUTPUTS = {
-    "clean": ROOT / "data" / "raw" / "allocation_grid" / "per_run_results.csv",
-    "ablation": ROOT / "data" / "raw" / "controller_ablation" / "per_run_results.csv",
-    "removal": ROOT / "data" / "raw" / "agent_removal" / "per_run_results.csv",
-    "feedback": ROOT / "data" / "raw" / "imperfect_feedback" / "per_run_results.csv",
+    "allocation": ROOT / "data" / "raw" / "allocation" / "per_run_results.csv",
+    "ablation": ROOT / "data" / "raw" / "ablation" / "per_run_results.csv",
+    "removal": ROOT / "data" / "raw" / "removal" / "per_run_results.csv",
+    "feedback": ROOT / "data" / "raw" / "feedback" / "per_run_results.csv",
 }
 
 COMMON_COLUMNS = [
@@ -84,7 +84,7 @@ METRIC_COLUMNS = [
     "tracker_norm",
 ]
 EXTRA_COLUMNS = {
-    "clean": [],
+    "allocation": [],
     "ablation": ["ablation_variant"],
     "removal": [
         "kill_percent",
@@ -108,7 +108,7 @@ EXTRA_COLUMNS = {
     ],
 }
 KEY_COLUMNS = {
-    "clean": ["run_method_id", "pop", "n", "step_ratio", "pattern", "rep"],
+    "allocation": ["run_method_id", "pop", "n", "step_ratio", "pattern", "rep"],
     "ablation": [
         "run_method_id",
         "pop",
@@ -284,10 +284,10 @@ def build_jobs(args: argparse.Namespace) -> Iterator[Job]:
         configurations = smoke_configurations(configurations)
         seeds = seeds[:1]
 
-    if args.experiment == "clean":
+    if args.experiment == "allocation":
         for seed_row in seeds:
             for configuration in configurations:
-                yield Job("clean", configuration, seed_row, {})
+                yield Job("allocation", configuration, seed_row, {})
         return
 
     if args.experiment == "removal":
@@ -516,9 +516,9 @@ def write_manifest(
         "smoke": args.smoke,
         "workers": args.workers,
         "selected_parameter_table": "data/parameters/reference_tuned_parameters.csv",
-        "seed_map": "data/manifests/allocation_seed_map.csv",
+        "seed_map": "data/seeds/allocation_seed_map.csv",
         "feedback_seed_map": (
-            "data/manifests/imperfect_feedback_seed_map.csv"
+            "data/seeds/feedback_seed_map.csv"
             if args.experiment == "feedback"
             else None
         ),

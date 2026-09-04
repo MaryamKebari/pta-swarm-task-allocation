@@ -31,14 +31,14 @@ from experiments.definitions import (
     filter_configurations,
     load_method_configurations,
 )
-from experiments.run_campaign import Job
-from experiments.run_campaign import (
+from experiments.run import Job
+from experiments.run import (
     simulator_overrides as campaign_overrides,
 )
-from experiments.simulator import run_simulation
+from experiments.run_sim import run_simulation
 
 ROOT = Path(__file__).resolve().parents[1]
-SEED_TABLE = ROOT / "data" / "manifests" / "tuning_seed_map.csv"
+SEED_TABLE = ROOT / "data" / "seeds" / "tuning_seed_map.csv"
 DEFAULT_OUTPUT = ROOT / "data" / "raw" / "reference_tuning"
 
 TRIALS = {
@@ -162,7 +162,7 @@ def evaluate_candidate(
     scratch_root: Path | None,
 ) -> tuple[float, list[dict[str, float | int]]]:
     def one(seed: int) -> dict[str, float | int]:
-        job = Job("clean", configuration, reference_seed_row(seed), {})
+        job = Job("allocation", configuration, reference_seed_row(seed), {})
         overrides = campaign_overrides(job)
         overrides.update(candidate)
         stats = run_simulation(overrides, seed=seed, scratch_root=scratch_root)

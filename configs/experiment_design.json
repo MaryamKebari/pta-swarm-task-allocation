@@ -9,7 +9,7 @@
     "step_ratio": 2.0,
     "demand_class": "iterative gradual"
   },
-  "clean_feedback_grid": {
+  "allocation": {
     "population": [50, 100, 500, 1000],
     "tasks": [4, 8, 12],
     "step_ratio": [1.5, 2.0, 2.5],
@@ -30,7 +30,7 @@
     "SETA": 6,
     "PTA": 12
   },
-  "controller_ablation": {
+  "ablation": {
     "repeated_reversal": {
       "population": 500,
       "tasks": [4, 12],
@@ -70,15 +70,15 @@
     "gain_scheme": "Agent",
     "repetitions": 100
   },
-  "agent_removal": {
-    "uses_clean_feedback_grid": true,
+  "removal": {
+    "uses_allocation_grid": true,
     "removal_percent": [0, 5, 10, 20, 30, 40, 50],
     "removal_step": 500,
     "capacity_model": "removed capacity is lost",
     "post_removal_window": [500, 999],
     "runs": 2721600
   },
-  "imperfect_feedback": {
+  "feedback": {
     "population": 500,
     "tasks": [4, 12],
     "step_ratio": [1.5, 2.0, 2.5],

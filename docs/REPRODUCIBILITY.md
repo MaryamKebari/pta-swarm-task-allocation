@@ -31,8 +31,8 @@ Each module writes to its corresponding processed data directory.
 ## Reproduce the full campaigns
 
 Full campaigns require millions of simulator calls and are intended for a Linux
-compute host. `experiments/tune_reference.py` implements reference tuning, and
-`experiments/run_campaign.py` implements the clean feedback, repeated reversal
+compute host. `experiments/tune.py` implements reference tuning, and
+`experiments/run.py` implements the clean feedback, repeated reversal
 ablation, removal, and imperfect feedback grids. Use
 `configs/experiment_design.json` as the authoritative factor specification,
 `configs/methods.json` for implementation mappings, and
@@ -49,11 +49,11 @@ make tuning-smoke
 Then launch one audited stage at a time:
 
 ```bash
-python experiments/tune_reference.py --workers 8 --scratch-root /local/scratch/pta
-python experiments/run_campaign.py clean --workers 8 --scratch-root /local/scratch/pta
-python experiments/run_campaign.py ablation --workers 8 --scratch-root /local/scratch/pta
-python experiments/run_campaign.py removal --workers 8 --scratch-root /local/scratch/pta
-python experiments/run_campaign.py feedback --workers 8 --scratch-root /local/scratch/pta
+python experiments/tune.py --workers 8 --scratch-root /local/scratch/pta
+python experiments/run.py allocation --workers 8 --scratch-root /local/scratch/pta
+python experiments/run.py ablation --workers 8 --scratch-root /local/scratch/pta
+python experiments/run.py removal --workers 8 --scratch-root /local/scratch/pta
+python experiments/run.py feedback --workers 8 --scratch-root /local/scratch/pta
 ```
 
 Each validation runner appends completed rows and skips matching rows on an
@@ -79,7 +79,7 @@ Maintain these invariants:
 7. calculate removal metrics on steps 500 through 999 for every severity;
 8. record source, specification, and parameter checksums with every campaign.
 
-The final campaign audit files are retained in `data/manifests`.
+The final campaign audit files are retained in `data/provenance`.
 
 ## Environment capture
 

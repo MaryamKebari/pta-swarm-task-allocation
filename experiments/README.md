@@ -1,14 +1,15 @@
 # Experiment runners
 
-The two entry points separate parameter selection from validation.
+Parameter selection and validation are separate commands. Folder names match
+the paper experiments: allocation, ablation, removal, and feedback.
 
-| Entry point | Purpose | Full scale |
+| Command | Purpose | Full scale |
 |---|---|---:|
-| `tune_reference.py` | Tune the 24 adaptive configurations at the reference setting | 64,800 simulations |
-| `run_campaign.py clean` | Evaluate all 27 configurations with clean feedback | 388,800 rows |
-| `run_campaign.py ablation` | Cross P, PI, PD, and full PTA under repeated reversal demand | 12,800 rows |
-| `run_campaign.py removal` | Remove 0% through 50% of agents at step 500 | 2,721,600 rows |
-| `run_campaign.py feedback` | Cross five noise and four bias levels | 1,296,000 rows |
+| `python experiments/tune.py` | Tune the 24 adaptive configurations at the reference setting | 64,800 simulations |
+| `python experiments/run.py allocation` | Evaluate all 27 configurations with clean feedback | 388,800 rows |
+| `python experiments/run.py ablation` | Cross P, PI, PD, and full PTA under repeated reversal demand | 12,800 rows |
+| `python experiments/run.py removal` | Remove 0% through 50% of agents at step 500 | 2,721,600 rows |
+| `python experiments/run.py feedback` | Cross five noise and four bias levels | 1,296,000 rows |
 
 Both runners execute the verified C simulator in isolated temporary directories.
 They never edit `simulator/src`, `configs/params.default`, or previous results.
@@ -30,7 +31,7 @@ campaign.
 Validation runs accept filters such as:
 
 ```bash
-python experiments/run_campaign.py clean \
+python experiments/run.py allocation \
   --families PTA SETA \
   --populations 50 100 \
   --tasks 4 8 \

@@ -20,24 +20,24 @@ class ProcessedDataTests(unittest.TestCase):
         )
 
     def test_seed_maps_cover_the_paper_grids(self) -> None:
-        allocation = pd.read_csv(ROOT / "data/manifests/allocation_seed_map.csv")
+        allocation = pd.read_csv(ROOT / "data/seeds/allocation_seed_map.csv")
         self.assertEqual(len(allocation), 14_400)
         condition_columns = ["pop", "n", "step_ratio", "pattern"]
         self.assertEqual(allocation[condition_columns].drop_duplicates().shape[0], 144)
         self.assertTrue((allocation.groupby(condition_columns).size() == 100).all())
 
-        feedback = pd.read_csv(ROOT / "data/manifests/imperfect_feedback_seed_map.csv")
+        feedback = pd.read_csv(ROOT / "data/seeds/feedback_seed_map.csv")
         feedback_conditions = ["n", "step_ratio", "pattern"]
         self.assertEqual(len(feedback), 2_400)
         self.assertEqual(feedback[feedback_conditions].drop_duplicates().shape[0], 24)
         self.assertTrue((feedback.groupby(feedback_conditions).size() == 100).all())
         self.assertEqual(
-            len(pd.read_csv(ROOT / "data/manifests/tuning_seed_map.csv")), 20
+            len(pd.read_csv(ROOT / "data/seeds/tuning_seed_map.csv")), 20
         )
 
-    def test_clean_transfer_summary_has_all_comparators(self) -> None:
+    def test_allocation_summary_has_all_comparators(self) -> None:
         table = pd.read_csv(
-            ROOT / "data/processed/clean_transfer/range_matched_summary.csv"
+            ROOT / "data/processed/allocation/range_matched_summary.csv"
         )
         self.assertEqual(set(table["comparator"]), {"CT", "LFTA", "SBTA", "SETA"})
         self.assertTrue((table["operating_condition_ranges"] == 432).all())
@@ -45,7 +45,7 @@ class ProcessedDataTests(unittest.TestCase):
 
     def test_feedback_grid_has_expected_severities(self) -> None:
         table = pd.read_csv(
-            ROOT / "data/processed/imperfect_feedback/pta_comparator_summary.csv"
+            ROOT / "data/processed/feedback/pta_comparator_summary.csv"
         )
         self.assertEqual(set(table["feedback_noise_alpha"]), {0.0, 0.05, 0.1, 0.2, 0.4})
         self.assertEqual(set(table["feedback_bias_alpha"]), {0.0, 0.05, 0.1, 0.2})

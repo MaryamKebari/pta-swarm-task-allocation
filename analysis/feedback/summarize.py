@@ -16,18 +16,18 @@ import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "data" / "processed" / "imperfect_feedback"
+OUT = ROOT / "data" / "processed" / "feedback"
 RAW_ROOT = ROOT / "data" / "raw"
 NOISE_CSV = Path(
     os.environ.get(
         "PTA_FEEDBACK_CSV",
-        RAW_ROOT / "imperfect_feedback" / "per_run_results.csv",
+        RAW_ROOT / "feedback" / "per_run_results.csv",
     )
 )
 ALLOCATION_CSV = Path(
     os.environ.get(
         "PTA_ALLOCATION_CSV",
-        RAW_ROOT / "allocation_grid" / "per_run_results.csv",
+        RAW_ROOT / "allocation" / "per_run_results.csv",
     )
 )
 

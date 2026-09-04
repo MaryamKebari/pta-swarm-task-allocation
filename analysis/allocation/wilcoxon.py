@@ -19,11 +19,11 @@ import pandas as pd
 from scipy import stats
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-HERE = REPO_ROOT / "data" / "processed" / "clean_transfer"
+HERE = REPO_ROOT / "data" / "processed" / "allocation"
 INPUT = Path(
     os.environ.get(
         "PTA_ALLOCATION_CSV",
-        REPO_ROOT / "data" / "raw" / "allocation_grid" / "per_run_results.csv",
+        REPO_ROOT / "data" / "raw" / "allocation" / "per_run_results.csv",
     )
 )
 CONDITION = ["pop", "n", "step_ratio", "pattern"]

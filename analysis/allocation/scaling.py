@@ -15,12 +15,12 @@ import pandas as pd
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 ROOT = SCRIPT_DIR.parents[1]
-HERE = ROOT / "data" / "processed" / "clean_transfer"
+HERE = ROOT / "data" / "processed" / "allocation"
 FIGURES = ROOT / "figures"
 INPUT = Path(
     os.environ.get(
         "PTA_ALLOCATION_CSV",
-        ROOT / "data" / "raw" / "allocation_grid" / "per_run_results.csv",
+        ROOT / "data" / "raw" / "allocation" / "per_run_results.csv",
     )
 )
 CONDITION = ["pop", "n", "step_ratio", "pattern"]
