@@ -43,6 +43,15 @@ The analysis entry points also accept these environment variables:
 Large raw files should be published as a release asset or archival dataset, not
 committed directly to Git history.
 
+## Seed maps
+
+`data/manifests/allocation_seed_map.csv` contains the 14,400 exact validation
+seed pairs used for the 144 clean feedback conditions and 100 repetitions.
+`imperfect_feedback_seed_map.csv` adds the noise and bias seeds for its 24
+conditions. `tuning_seed_map.csv` contains the 20 shared tuning seeds. The
+campaign runners read these files directly; they do not generate replacement
+seeds at runtime.
+
 ## Parameter table
 
 `data/parameters/reference_tuned_parameters.csv` contains one row for every

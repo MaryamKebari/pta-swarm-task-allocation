@@ -23,9 +23,14 @@ REQUIRED = [
     "data/manifests/simulator_source_sha256.csv",
     "docs/DATA.md",
     "docs/EXPERIMENTS.md",
+    "docs/FIGURES.md",
     "docs/METHODS.md",
+    "docs/PAPER_TRACEABILITY.md",
     "docs/PROVENANCE.md",
+    "docs/README.md",
     "docs/REPRODUCIBILITY.md",
+    "experiments/run_campaign.py",
+    "experiments/tune_reference.py",
     "simulator/src/ftracker.c",
 ]
 TEXT_SUFFIXES = {".c", ".h", ".py", ".md", ".json", ".toml", ".yml", ".yaml", ".txt"}
@@ -91,11 +96,21 @@ def main() -> None:
             "Simulator source provenance mismatch:\n" + "\n".join(source_mismatches)
         )
 
+    skip_parts = {
+        ".git",
+        ".venv",
+        "venv",
+        "build",
+        "__pycache__",
+        ".ruff_cache",
+        ".pytest_cache",
+        "site-packages",
+    }
     findings: list[str] = []
     for path in ROOT.rglob("*"):
         if (
             not path.is_file()
-            or ".git" in path.parts
+            or skip_parts.intersection(path.parts)
             or path.suffix.lower() not in TEXT_SUFFIXES
         ):
             continue

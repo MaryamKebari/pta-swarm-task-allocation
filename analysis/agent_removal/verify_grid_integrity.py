@@ -10,7 +10,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 STEP_RATIOS = {1.5, 2.0, 2.5}
 POST_METRICS = [
     "post_removal_R",
@@ -76,9 +75,7 @@ def main() -> None:
             ).sum()
         )
         expected_kill = np.rint(
-            chunk["pop"].to_numpy(float)
-            * chunk["kill_percent"].to_numpy(float)
-            / 100.0
+            chunk["pop"].to_numpy(float) * chunk["kill_percent"].to_numpy(float) / 100.0
         ).astype(int)
         invalid_removal_counts += int(
             (chunk["kill_number"].to_numpy(int) != expected_kill).sum()
@@ -101,7 +98,9 @@ def main() -> None:
 
         base_cols = ["pop", "n", "step_ratio", "pattern", "kill_percent", "rep"]
         for key, group in chunk.groupby(base_cols):
-            pairs = set(zip(group["seed"].astype(int), group["target_path_seed"].astype(int)))
+            pairs = set(
+                zip(group["seed"].astype(int), group["target_path_seed"].astype(int))
+            )
             base_seed_pairs[key].update(pairs)
             base_configs[key].update(group["config"].astype(str))
 
@@ -138,15 +137,22 @@ def main() -> None:
         if (
             (key == "reported_rows" and value != expected_rows)
             or (key == "configuration_cells" and value != expected_cells)
-            or (key in {"min_repetitions_per_cell", "max_repetitions_per_cell"} and value != 100)
-            or (key not in {
-                "reported_rows",
-                "expected_rows",
-                "configuration_cells",
-                "expected_configuration_cells",
-                "min_repetitions_per_cell",
-                "max_repetitions_per_cell",
-            } and value != 0)
+            or (
+                key in {"min_repetitions_per_cell", "max_repetitions_per_cell"}
+                and value != 100
+            )
+            or (
+                key
+                not in {
+                    "reported_rows",
+                    "expected_rows",
+                    "configuration_cells",
+                    "expected_configuration_cells",
+                    "min_repetitions_per_cell",
+                    "max_repetitions_per_cell",
+                }
+                and value != 0
+            )
         )
     }
     lines = ["Agent-removal grid-integrity audit"]

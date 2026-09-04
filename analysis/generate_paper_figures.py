@@ -17,7 +17,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-
 ROOT = Path(__file__).resolve().parents[1]
 ANALYSIS = ROOT / "data" / "processed"
 FIGURES = ROOT / "figures"
@@ -100,7 +99,9 @@ def paired_summary(
     comparator: str,
     seed: int,
 ) -> dict[str, float | int]:
-    log_values = np.log(values[focal].to_numpy(float) / values[comparator].to_numpy(float))
+    log_values = np.log(
+        values[focal].to_numpy(float) / values[comparator].to_numpy(float)
+    )
     median, low, high = bootstrap_median_log(log_values, seed)
     return {
         "focal_lower": int(np.sum(log_values < 0)),
@@ -198,14 +199,25 @@ def plot_step_effects(summary: pd.DataFrame) -> None:
     ax.set_xticks(x, [f"{value:.1f}" for value in data["level"]])
     ax.set_xlabel("Step ratio, $s$")
     ax.set_ylabel("Median paired imbalance, $R$")
-    ax.set_title("PTA error decreases as capacity increases", loc="left", fontweight="semibold")
+    ax.set_title(
+        "PTA error decreases as capacity increases", loc="left", fontweight="semibold"
+    )
     ax.grid(axis="y", color="#D9D9D9", linewidth=0.6)
     ax.spines[["top", "right"]].set_visible(False)
     for index, (xi, value) in enumerate(zip(x, data["median_pta_R"])):
         if index == len(data) - 1:
-            ax.text(xi, value + 0.020, f"{value:.3f}", ha="center", va="bottom", fontsize=10.5)
+            ax.text(
+                xi,
+                value + 0.020,
+                f"{value:.3f}",
+                ha="center",
+                va="bottom",
+                fontsize=10.5,
+            )
         else:
-            ax.text(xi, value - 0.045, f"{value:.3f}", ha="center", va="top", fontsize=10.5)
+            ax.text(
+                xi, value - 0.045, f"{value:.3f}", ha="center", va="top", fontsize=10.5
+            )
     fig.tight_layout()
     save(fig, "step_ratio_pta_error")
 
@@ -227,7 +239,11 @@ def plot_step_effects(summary: pd.DataFrame) -> None:
     ax.set_xticks(x, [f"{value:.1f}" for value in data["level"]])
     ax.set_xlabel("Step ratio, $s$")
     ax.set_ylabel("Median PTA reduction in $R$ (%)")
-    ax.set_title("PTA advantage is smallest at the highest tested capacity", loc="left", fontweight="semibold")
+    ax.set_title(
+        "PTA advantage is smallest at the highest tested capacity",
+        loc="left",
+        fontweight="semibold",
+    )
     ax.grid(axis="y", color="#D9D9D9", linewidth=0.6)
     ax.spines[["top", "right"]].set_visible(False)
     for xi, value in zip(x, values):
@@ -239,16 +255,32 @@ def plot_step_effects(summary: pd.DataFrame) -> None:
 def plot_scaling() -> None:
     summary = pd.read_csv(CLEAN / "population_task_scaling_summary.csv")
     specs = [
-        ("pop", [50, 100, 500, 1000], "Population size, $n$", "population_pta_advantage", "PTA advantage across population sizes"),
-        ("n", [4, 8, 12], "Number of tasks, $m$", "task_count_pta_advantage", "PTA advantage across task counts"),
+        (
+            "pop",
+            [50, 100, 500, 1000],
+            "Population size, $n$",
+            "population_pta_advantage",
+            "PTA advantage across population sizes",
+        ),
+        (
+            "n",
+            [4, 8, 12],
+            "Number of tasks, $m$",
+            "task_count_pta_advantage",
+            "PTA advantage across task counts",
+        ),
     ]
     for factor, levels, xlabel, stem, title in specs:
         fig, ax = plt.subplots(figsize=(6.75, 3.65))
         for threshold_range in ("HM", "HT1", "HT2"):
-            data = summary.loc[
-                summary["factor"].eq(factor)
-                & summary["threshold_range"].eq(threshold_range)
-            ].set_index("level").loc[levels]
+            data = (
+                summary.loc[
+                    summary["factor"].eq(factor)
+                    & summary["threshold_range"].eq(threshold_range)
+                ]
+                .set_index("level")
+                .loc[levels]
+            )
             x = np.arange(len(levels), dtype=float)
             y = data["median_reduction_percent"].to_numpy(float)
             low = data["ci_low"].to_numpy(float)
@@ -287,7 +319,9 @@ def plot_threshold_range_preference() -> None:
     )
     patterns = ["random", "scurve", "sharp", "zigzag"]
     steps = [1.5, 2.0, 2.5]
-    fig, axes = plt.subplots(2, 2, figsize=(7.0, 5.3), sharey=True, constrained_layout=True)
+    fig, axes = plt.subplots(
+        2, 2, figsize=(7.0, 5.3), sharey=True, constrained_layout=True
+    )
     for panel, (ax, pattern) in enumerate(zip(axes.flat, patterns)):
         bottom = np.zeros(len(steps))
         for threshold_range in ("HM", "HT1", "HT2"):
@@ -325,13 +359,25 @@ def plot_threshold_range_preference() -> None:
             bottom += 100.0 * values_array / 12.0
         ax.set_xticks(np.arange(len(steps)), [f"{step:.1f}" for step in steps])
         ax.set_xlabel("Step ratio, $s$")
-        ax.set_title(f"({chr(97 + panel)}) {PATTERN_NAMES[pattern].replace(chr(10), ' ')}", loc="left", fontweight="semibold")
+        ax.set_title(
+            f"({chr(97 + panel)}) {PATTERN_NAMES[pattern].replace(chr(10), ' ')}",
+            loc="left",
+            fontweight="semibold",
+        )
         ax.spines[["top", "right"]].set_visible(False)
         ax.grid(axis="y", color="#E2E2E2", linewidth=0.5)
     axes[0, 0].set_ylabel("Preferred range (%)")
     axes[1, 0].set_ylabel("Preferred range (%)")
     handles, labels = axes[0, 0].get_legend_handles_labels()
-    fig.legend(handles, labels, title="Threshold range", frameon=False, ncol=3, loc="lower center", bbox_to_anchor=(0.5, -0.035))
+    fig.legend(
+        handles,
+        labels,
+        title="Threshold range",
+        frameon=False,
+        ncol=3,
+        loc="lower center",
+        bbox_to_anchor=(0.5, -0.035),
+    )
     save(fig, "threshold_range_preference")
 
 
@@ -390,35 +436,68 @@ def plot_removal() -> None:
 
     fig, ax = plt.subplots(figsize=(6.8, 3.75))
     for step_ratio, (color, marker, line) in STEP_STYLES.items():
-        group = degradation.loc[degradation["step_ratio"].eq(step_ratio)].sort_values("kill_percent")
+        group = degradation.loc[degradation["step_ratio"].eq(step_ratio)].sort_values(
+            "kill_percent"
+        )
         fold = 1.0 + group["median_post_removal_R_degradation_percent"] / 100.0
         low = 1.0 + group["post_removal_R_degradation_ci_low"] / 100.0
         high = 1.0 + group["post_removal_R_degradation_ci_high"] / 100.0
-        ax.plot(group["kill_percent"], fold, color=color, marker=marker, linestyle=line, linewidth=2.0, label=rf"$s={step_ratio:.1f}$")
-        ax.fill_between(group["kill_percent"], low, high, color=color, alpha=0.10, linewidth=0)
+        ax.plot(
+            group["kill_percent"],
+            fold,
+            color=color,
+            marker=marker,
+            linestyle=line,
+            linewidth=2.0,
+            label=rf"$s={step_ratio:.1f}$",
+        )
+        ax.fill_between(
+            group["kill_percent"], low, high, color=color, alpha=0.10, linewidth=0
+        )
     ax.axhline(1.0, color=GRAY, linewidth=0.9, linestyle="--")
     ax.set_yscale("log")
     ax.set_xlabel("Agents removed (%)")
     ax.set_ylabel(r"$R^{\mathrm{post}}/R^{\mathrm{post}}(0)$")
-    ax.set_title("PTA deterioration relative to no removal", loc="left", fontweight="semibold")
+    ax.set_title(
+        "PTA deterioration relative to no removal", loc="left", fontweight="semibold"
+    )
     ax.legend(title="Step ratio", frameon=False, ncol=3)
     style_removal_axis(ax)
     fig.tight_layout()
     save(fig, "agent_removal_deterioration")
 
     for metric, stem, title in [
-        ("post_removal_R", "agent_removal_paired_advantage", "PTA paired imbalance advantage after removal"),
-        ("post_removal_R_abs", "agent_removal_raw_advantage", "PTA raw residual advantage after removal"),
+        (
+            "post_removal_R",
+            "agent_removal_paired_advantage",
+            "PTA paired imbalance advantage after removal",
+        ),
+        (
+            "post_removal_R_abs",
+            "agent_removal_raw_advantage",
+            "PTA raw residual advantage after removal",
+        ),
     ]:
         fig, ax = plt.subplots(figsize=(6.8, 3.75))
         for comparator in ("CT", "LFTA", "SBTA", "SETA"):
-            group = comparison.loc[comparison["comparator"].eq(comparator)].sort_values("kill_percent")
+            group = comparison.loc[comparison["comparator"].eq(comparator)].sort_values(
+                "kill_percent"
+            )
             x = group["kill_percent"]
             y = group[f"{metric}_median_reduction_percent"]
             low = group[f"{metric}_ci_low"]
             high = group[f"{metric}_ci_high"]
-            ax.plot(x, y, color=METHOD_COLORS[comparator], marker=METHOD_MARKERS[comparator], linewidth=1.9, label=comparator)
-            ax.fill_between(x, low, high, color=METHOD_COLORS[comparator], alpha=0.10, linewidth=0)
+            ax.plot(
+                x,
+                y,
+                color=METHOD_COLORS[comparator],
+                marker=METHOD_MARKERS[comparator],
+                linewidth=1.9,
+                label=comparator,
+            )
+            ax.fill_between(
+                x, low, high, color=METHOD_COLORS[comparator], alpha=0.10, linewidth=0
+            )
         ax.axhline(0, color=GRAY, linewidth=0.9, linestyle="--")
         ax.set_xlabel("Agents removed (%)")
         ax.set_ylabel("PTA reduction (%)")
@@ -441,7 +520,9 @@ def make_selected_configuration_tables() -> None:
     }
     columns = []
     for family, config in selected.items():
-        frame = removal.loc[removal["config"].eq(config), keys + ["post_removal_R"]].copy()
+        frame = removal.loc[
+            removal["config"].eq(config), keys + ["post_removal_R"]
+        ].copy()
         frame = frame.rename(columns={"post_removal_R": family})
         columns.append(frame)
     paired = columns[0]
@@ -452,13 +533,25 @@ def make_selected_configuration_tables() -> None:
     for severity in (5, 10, 20, 30, 40, 50):
         group = paired.loc[paired["kill_percent"].eq(severity)]
         for comparator in ("CT", "LFTA", "SBTA", "SETA"):
-            result = paired_summary(group, focal="PTA", comparator=comparator, seed=seed)
+            result = paired_summary(
+                group, focal="PTA", comparator=comparator, seed=seed
+            )
             seed += 1
-            records.append({"kill_percent": severity, "comparator": comparator, **result})
-    pd.DataFrame(records).to_csv(REMOVAL / "selected_configuration_comparison.csv", index=False)
+            records.append(
+                {"kill_percent": severity, "comparator": comparator, **result}
+            )
+    pd.DataFrame(records).to_csv(
+        REMOVAL / "selected_configuration_comparison.csv", index=False
+    )
 
     feedback = pd.read_csv(FEEDBACK / "condition_means.csv")
-    feedback_keys = ["n", "step_ratio", "pattern", "feedback_noise_alpha", "feedback_bias_alpha"]
+    feedback_keys = [
+        "n",
+        "step_ratio",
+        "pattern",
+        "feedback_noise_alpha",
+        "feedback_bias_alpha",
+    ]
     selectors = {
         "PTA": ("PTA", "PTA-HT1-AgentPID", "clamped"),
         "CT": ("CT", "CT-HM", "clamped"),
@@ -478,7 +571,9 @@ def make_selected_configuration_tables() -> None:
         selected_frames.append(frame)
     feedback_paired = selected_frames[0]
     for frame in selected_frames[1:]:
-        feedback_paired = feedback_paired.merge(frame, on=feedback_keys, validate="one_to_one")
+        feedback_paired = feedback_paired.merge(
+            frame, on=feedback_keys, validate="one_to_one"
+        )
     strongest = feedback_paired.loc[
         feedback_paired["feedback_noise_alpha"].eq(0.4)
         & feedback_paired["feedback_bias_alpha"].eq(0.2)
@@ -486,9 +581,13 @@ def make_selected_configuration_tables() -> None:
     records = []
     seed = 20260940
     for comparator in ("CT", "LFTA", "SBTA", "SETA"):
-        paired_r = paired_summary(strongest, focal="R_PTA", comparator=f"R_{comparator}", seed=seed)
+        paired_r = paired_summary(
+            strongest, focal="R_PTA", comparator=f"R_{comparator}", seed=seed
+        )
         seed += 1
-        paired_raw = paired_summary(strongest, focal="R_abs_PTA", comparator=f"R_abs_{comparator}", seed=seed)
+        paired_raw = paired_summary(
+            strongest, focal="R_abs_PTA", comparator=f"R_abs_{comparator}", seed=seed
+        )
         seed += 1
         records.append(
             {
@@ -497,7 +596,9 @@ def make_selected_configuration_tables() -> None:
                 **{f"R_abs_{key}": value for key, value in paired_raw.items()},
             }
         )
-    pd.DataFrame(records).to_csv(FEEDBACK / "selected_configuration_strongest.csv", index=False)
+    pd.DataFrame(records).to_csv(
+        FEEDBACK / "selected_configuration_strongest.csv", index=False
+    )
 
     clean = feedback_paired.loc[
         feedback_paired["feedback_noise_alpha"].eq(0.0)
@@ -505,11 +606,15 @@ def make_selected_configuration_tables() -> None:
         ["n", "step_ratio", "pattern", "R_PTA", "R_abs_PTA"],
     ]
     noisy = strongest[["n", "step_ratio", "pattern", "R_PTA", "R_abs_PTA"]]
-    own = clean.merge(noisy, on=["n", "step_ratio", "pattern"], suffixes=("_clean", "_noisy"))
+    own = clean.merge(
+        noisy, on=["n", "step_ratio", "pattern"], suffixes=("_clean", "_noisy")
+    )
     own_records = []
     for index, metric in enumerate(("R_PTA", "R_abs_PTA")):
         log_values = np.log(own[f"{metric}_noisy"] / own[f"{metric}_clean"])
-        median, low, high = bootstrap_median_log(log_values.to_numpy(float), 20260960 + index)
+        median, low, high = bootstrap_median_log(
+            log_values.to_numpy(float), 20260960 + index
+        )
         own_records.append(
             {
                 "metric": "R" if metric == "R_PTA" else "R_abs",
@@ -519,7 +624,9 @@ def make_selected_configuration_tables() -> None:
                 "ci_high": float(100.0 * (np.exp(high) - 1.0)),
             }
         )
-    pd.DataFrame(own_records).to_csv(FEEDBACK / "selected_configuration_own_degradation.csv", index=False)
+    pd.DataFrame(own_records).to_csv(
+        FEEDBACK / "selected_configuration_own_degradation.csv", index=False
+    )
 
 
 def main() -> None:

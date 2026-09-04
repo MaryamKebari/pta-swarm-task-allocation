@@ -6,9 +6,17 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
-INCLUDE = ("analysis", "configs", "data/manifests", "data/parameters", "data/processed", "docs", "simulator/src")
+INCLUDE = (
+    "analysis",
+    "configs",
+    "data/manifests",
+    "data/parameters",
+    "data/processed",
+    "docs",
+    "experiments",
+    "simulator/src",
+)
 EXCLUDE_NAMES = {"CHECKSUMS.sha256", "sim"}
 
 
@@ -24,7 +32,13 @@ def main() -> None:
     files: list[Path] = []
     for name in INCLUDE:
         files.extend(path for path in (ROOT / name).rglob("*") if path.is_file())
-    files = sorted(path for path in files if path.name not in EXCLUDE_NAMES and path.suffix != ".o")
+    files = sorted(
+        path
+        for path in files
+        if path.name not in EXCLUDE_NAMES
+        and path.suffix != ".o"
+        and "__pycache__" not in path.parts
+    )
     lines = [f"{digest(path)}  {path.relative_to(ROOT)}" for path in files]
     (ROOT / "CHECKSUMS.sha256").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"Wrote checksums for {len(lines)} artifacts")

@@ -1,17 +1,44 @@
 # Figure guide
 
-The committed images in `docs/assets` are quick previews. The analysis scripts
-regenerate publication files in `figures/`.
+`make figures` regenerates publication files in `figures/`. The images in
+`docs/assets/` are README previews of a subset of those figures.
 
-| Preview | Claim supported | Horizontal axis | Vertical axis or rows |
+A positive percentage reduction means PTA has lower error than the comparator.
+Dashed zero or equality lines are neutral references, not fitted trends.
+
+## Regenerated paper figures
+
+| File in `figures/` | Claim | Script | Source tables |
 |---|---|---|---|
-| `demand_class_pta_advantage.png` | PTA's advantage varies with demand structure | median reduction in paired imbalance, `R` | four demand classes |
-| `population_pta_advantage.png` | PTA's advantage persists across tested population sizes | population size | median reduction in `R` |
-| `frozen_reference_winner_atlas.png` | the preferred PTA configuration changes across settings | step ratio and task count | demand class and population groups |
-| `agent_removal_deterioration.png` | error rises as capacity is removed | removal percentage | post removal error or relative degradation |
-| `imperfect_feedback_pta_comparators.png` | PTA retains a relative advantage under noise and bias | feedback severity | comparator specific effect |
+| `demand_class_pta_advantage` | PTA's advantage varies with demand structure | `analysis/generate_paper_figures.py` | `data/processed/clean_transfer/` |
+| `step_ratio_pta_error` | Absolute error changes with capacity | `analysis/generate_paper_figures.py` | `data/processed/clean_transfer/` |
+| `step_ratio_pta_advantage` | PTA's relative advantage is smallest at the highest tested capacity | `analysis/generate_paper_figures.py` | `data/processed/clean_transfer/` |
+| `population_pta_advantage` | The advantage persists across population sizes | `analysis/generate_paper_figures.py` | `data/processed/clean_transfer/population_task_scaling_summary.csv` |
+| `task_count_pta_advantage` | The advantage persists across task counts | `analysis/generate_paper_figures.py` | `data/processed/clean_transfer/population_task_scaling_summary.csv` |
+| `threshold_range_preference` | Preferred threshold range depends on demand class and step ratio | `analysis/generate_paper_figures.py` | `data/processed/clean_transfer/winner_by_condition.csv` |
+| `frozen_reference_winner_atlas` | The preferred PTA configuration changes across the grid | `analysis/clean_transfer/make_frozen_winner_atlas.py` | `data/processed/clean_transfer/` |
+| `integral_term_role` | Integral action matters for persistent error | `analysis/generate_paper_figures.py` | `data/processed/ablation/ablation_selected_path_summary.csv` |
+| `derivative_term_role` | Derivative action matters for rapid reversals | `analysis/generate_paper_figures.py` | `data/processed/ablation/ablation_selected_path_summary.csv` |
+| `population_mechanism_diagnostic` | Recruitment variability changes with population size | `analysis/population/plot_population_mechanism_diagnostic.py` | `data/processed/population/` |
+| `agent_removal_deterioration` | Error rises as agents and capacity are removed | `analysis/generate_paper_figures.py` | `data/processed/agent_removal/pta_degradation_by_step_ratio.csv` |
+| `agent_removal_paired_advantage` | PTA retains a paired-imbalance advantage after removal | `analysis/generate_paper_figures.py` | `data/processed/agent_removal/pta_comparator_summary.csv` |
+| `agent_removal_raw_advantage` | PTA retains a raw-residual advantage after removal | `analysis/generate_paper_figures.py` | `data/processed/agent_removal/pta_comparator_summary.csv` |
+| `imperfect_feedback_pta_comparators` | PTA retains a relative advantage under noise and bias | `analysis/imperfect_feedback/analyze_imperfect_feedback_results.py` | `data/processed/imperfect_feedback/` |
+| `imperfect_feedback_own_clean` | Degradation relative to each method's own clean-feedback result | `analysis/imperfect_feedback/analyze_imperfect_feedback_results.py` | `data/processed/imperfect_feedback/` |
 
-Effects are paired within the matching unit defined by the corresponding
-analysis. A positive percentage reduction means PTA has lower error. Equality
-lines and zero effect references are therefore neutral boundaries, not fitted
-trends.
+Each stem is written as both `.pdf` and `.png`.
+
+## How to regenerate
+
+```bash
+make figures
+```
+
+That command uses only `data/processed`. It does not re-run the C simulator.
+
+To rebuild a statistical summary from raw campaign output, place the raw CSV
+files as described in [DATA.md](DATA.md) and run the corresponding script in
+`analysis/`.
+
+The numbered conclusion list in [PAPER_TRACEABILITY.md](PAPER_TRACEABILITY.md)
+is the manuscript-facing map.

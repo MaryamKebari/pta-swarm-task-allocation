@@ -18,7 +18,10 @@ validation use separate seeds. CT has no adaptive parameter to tune.
 
 The public selections are in
 `data/parameters/reference_tuned_parameters.csv`. The trial budgets are recorded
-in `configs/experiment_design.json` and reflect the paper protocol.
+in `configs/experiment_design.json` and reflect the paper protocol. The complete
+Optuna TPE implementation and declared search spaces are in
+`experiments/tune_reference.py`; all configurations use the same 20 seeds from
+`data/manifests/tuning_seed_map.csv`.
 
 ## Clean feedback allocation grid
 
@@ -41,6 +44,11 @@ The crossed P, PI, PD, and full PTA comparison tests the roles of integral and
 derivative action. Repeated reversal demand is used to expose response to rapid
 changes. Plateau demand is used to expose persistent error. The comparison uses
 the same underlying full PTA gains, with omitted terms set to zero.
+
+The repeated reversal grid is produced by `experiments/run_campaign.py
+ablation`. The sustained plateau is a focused directional diagnostic whose raw
+file can be supplied to `analysis/ablation/make_controller_ablation_term_roles.py`
+with `PTA_PLATEAU_ABLATION_CSV`.
 
 ## Agent removal
 

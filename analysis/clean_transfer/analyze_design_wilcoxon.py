@@ -18,7 +18,6 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HERE = REPO_ROOT / "data" / "processed" / "clean_transfer"
 INPUT = Path(
@@ -63,9 +62,7 @@ def paired_tests(
     )
     if not paired["seed_left"].eq(paired["seed_right"]).all():
         raise RuntimeError(f"Simulation seeds do not match for {comparison}")
-    if not paired["target_path_seed_left"].eq(
-        paired["target_path_seed_right"]
-    ).all():
+    if not paired["target_path_seed_left"].eq(paired["target_path_seed_right"]).all():
         raise RuntimeError(f"Target-path seeds do not match for {comparison}")
 
     rows: list[dict[str, object]] = []

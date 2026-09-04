@@ -10,9 +10,10 @@ Analysis is grouped by the scientific question it answers.
 | `agent_removal` | How does performance change after agents and their capacity are removed? |
 | `imperfect_feedback` | How do feedback noise and persistent bias affect performance? |
 
-`generate_paper_figures.py` creates the principal one conclusion figures from
-the committed processed tables. `scripts/make_figures.py` is the recommended
-public entry point because it runs all figure groups from the repository root.
+`generate_paper_figures.py` creates the principal one-conclusion figures from
+the committed processed tables. `scripts/make_figures.py` is the public entry
+point; run it with `make figures`. The file-by-file map is in
+[`docs/FIGURES.md`](../docs/FIGURES.md).
 
 Scripts that rebuild summaries from raw data use the environment variables in
 `docs/DATA.md`. They validate expected columns and experimental coverage before

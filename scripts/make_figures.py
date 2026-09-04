@@ -7,7 +7,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -18,6 +17,7 @@ def run(*arguments: str) -> None:
 def main() -> None:
     (ROOT / "figures").mkdir(exist_ok=True)
     run("analysis/generate_paper_figures.py")
+    run("analysis/clean_transfer/make_frozen_winner_atlas.py")
     run("analysis/imperfect_feedback/analyze_imperfect_feedback_results.py")
     run(
         "analysis/population/plot_population_mechanism_diagnostic.py",

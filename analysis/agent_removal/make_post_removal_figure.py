@@ -12,7 +12,6 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 
-
 METHOD_COLORS = {
     "CT": "#6B6B6B",
     "LFTA": "#D55E00",
@@ -49,9 +48,7 @@ def main() -> None:
     severity = pd.read_csv(
         args.analysis / "pta_post_removal_severity_by_step_ratio.csv"
     )
-    degradation = pd.read_csv(
-        args.analysis / "pta_degradation_by_step_ratio.csv"
-    )
+    degradation = pd.read_csv(args.analysis / "pta_degradation_by_step_ratio.csv")
     summary = pd.read_csv(args.analysis / "pta_comparator_summary.csv")
 
     plt.rcParams.update(
@@ -73,7 +70,7 @@ def main() -> None:
             "kill_percent"
         )
         x = group["kill_percent"]
-        line, = axes[0, 0].plot(
+        (line,) = axes[0, 0].plot(
             x,
             group["median_post_removal_R"],
             color=color,
@@ -117,9 +114,7 @@ def main() -> None:
         )
     axes[0, 0].set_yscale("log")
     axes[0, 0].set_ylabel(r"$R^{\mathrm{post}}$")
-    axes[0, 0].set_title(
-        r"(a) $R$ after removal", loc="left", fontweight="bold"
-    )
+    axes[0, 0].set_title(r"(a) $R$ after removal", loc="left", fontweight="bold")
 
     axes[0, 1].axhline(1, color="#777777", linewidth=0.8)
     axes[0, 1].set_yscale("log")
@@ -143,12 +138,16 @@ def main() -> None:
     method_handles = []
     method_labels = []
     for comparator in ("CT", "LFTA", "SBTA", "SETA"):
-        group = summary[summary["comparator"].eq(comparator)].sort_values("kill_percent")
-        for index, (axis, metric) in enumerate((
-            (axes[1, 0], "post_removal_R"),
-            (axes[1, 1], "post_removal_R_abs"),
-        )):
-            line, = axis.plot(
+        group = summary[summary["comparator"].eq(comparator)].sort_values(
+            "kill_percent"
+        )
+        for index, (axis, metric) in enumerate(
+            (
+                (axes[1, 0], "post_removal_R"),
+                (axes[1, 1], "post_removal_R_abs"),
+            )
+        ):
+            (line,) = axis.plot(
                 group["kill_percent"],
                 group[f"{metric}_median_reduction_percent"],
                 color=METHOD_COLORS[comparator],
@@ -170,9 +169,7 @@ def main() -> None:
 
     axes[1, 0].axhline(0, color="#777777", linewidth=0.8)
     axes[1, 0].set_ylabel("PTA reduction (%)")
-    axes[1, 0].set_title(
-        r"(c) PTA advantage in $R$", loc="left", fontweight="bold"
-    )
+    axes[1, 0].set_title(r"(c) PTA advantage in $R$", loc="left", fontweight="bold")
 
     axes[1, 1].axhline(0, color="#777777", linewidth=0.8)
     axes[1, 1].set_ylabel("PTA reduction (%)")

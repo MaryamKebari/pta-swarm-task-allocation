@@ -15,7 +15,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 REPORTED_STEP_RATIOS = (1.5, 2.0, 2.5)
 KEYS = [
     "pop",
@@ -38,13 +37,17 @@ METRICS = [
     "post_removal_R2_norm",
     "post_removal_R2_max_norm",
 ]
-USECOLS = KEYS + METRICS + [
-    "rep",
-    "seed",
-    "target_path_seed",
-    "post_removal_steps",
-    "reused_from_allocation",
-]
+USECOLS = (
+    KEYS
+    + METRICS
+    + [
+        "rep",
+        "seed",
+        "target_path_seed",
+        "post_removal_steps",
+        "reused_from_allocation",
+    ]
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -110,8 +113,7 @@ def aggregate_condition_means(
             audits.append(audit)
 
             valid = chunk[
-                chunk["kill_percent"].gt(0)
-                | chunk["post_removal_steps"].eq(500)
+                chunk["kill_percent"].gt(0) | chunk["post_removal_steps"].eq(500)
             ].copy()
             grouped = valid.groupby(KEYS + ["config"], dropna=False)
             sums = grouped[METRICS].sum().add_suffix("__sum")
@@ -143,7 +145,14 @@ def aggregate_condition_means(
 def matched_comparisons(condition: pd.DataFrame) -> pd.DataFrame:
     pta = condition[condition["family"].eq("PTA")].copy()
     outputs: list[pd.DataFrame] = []
-    base_condition = ["pop", "n", "step_ratio", "pattern", "kill_percent", "threshold_range"]
+    base_condition = [
+        "pop",
+        "n",
+        "step_ratio",
+        "pattern",
+        "kill_percent",
+        "threshold_range",
+    ]
     for comparator in ("CT", "LFTA", "SBTA", "SETA"):
         baseline = condition[condition["family"].eq(comparator)].copy()
         join = list(base_condition)
@@ -169,7 +178,9 @@ def matched_comparisons(condition: pd.DataFrame) -> pd.DataFrame:
 
 def summarize_comparisons(comparisons: pd.DataFrame, draws: int) -> pd.DataFrame:
     rows: list[dict] = []
-    for (comparator, kill), group in comparisons.groupby(["comparator", "kill_percent"]):
+    for (comparator, kill), group in comparisons.groupby(
+        ["comparator", "kill_percent"]
+    ):
         cluster_keys = ["pop", "n", "step_ratio", "pattern"]
         record: dict[str, object] = {
             "comparator": comparator,
@@ -245,10 +256,7 @@ def summarize_pta_severity_by_step_ratio(
                 values,
                 draws=draws,
                 seed=(
-                    20261108
-                    + int(kill) * 100
-                    + int(round(float(step_ratio) * 10))
-                    + offset
+                    20261108 + int(kill) * 100 + round(float(step_ratio) * 10) + offset
                 ),
             )
             rec[f"median_{metric}"] = float(np.median(values))
@@ -286,7 +294,7 @@ def summarize_comparisons_by_step_ratio(
                 seed=(
                     20261208
                     + int(kill) * 100
-                    + int(round(float(step_ratio) * 10))
+                    + round(float(step_ratio) * 10)
                     + offset * 10
                     + len(comparator)
                 ),
@@ -332,8 +340,15 @@ def summarize_strongest_removal_by_pattern(
 def degradation_relative_to_zero(condition: pd.DataFrame) -> pd.DataFrame:
     """Match every configuration-condition to its valid 0% post-event control."""
     match = [
-        "pop", "n", "step_ratio", "pattern", "family", "threshold_range",
-        "threshold_mode", "gain_scheme", "config",
+        "pop",
+        "n",
+        "step_ratio",
+        "pattern",
+        "family",
+        "threshold_range",
+        "threshold_mode",
+        "gain_scheme",
+        "config",
     ]
     zero = condition[condition["kill_percent"].eq(0)][
         match + ["post_removal_R", "post_removal_R_abs"]
@@ -403,7 +418,9 @@ def main() -> None:
     severity_by_step.to_csv(
         args.output / "pta_post_removal_severity_by_step_ratio.csv", index=False
     )
-    comparison_by_step = summarize_comparisons_by_step_ratio(comparisons, args.bootstrap)
+    comparison_by_step = summarize_comparisons_by_step_ratio(
+        comparisons, args.bootstrap
+    )
     comparison_by_step.to_csv(
         args.output / "pta_comparator_summary_by_step_ratio.csv", index=False
     )

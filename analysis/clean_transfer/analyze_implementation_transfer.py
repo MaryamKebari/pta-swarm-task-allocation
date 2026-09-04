@@ -14,7 +14,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HERE = REPO_ROOT / "data" / "processed" / "clean_transfer"
 INPUT = Path(
@@ -61,9 +60,7 @@ def clustered_interval(
     batch = 500
     for start in range(0, BOOTSTRAP_DRAWS, batch):
         stop = min(start + batch, BOOTSTRAP_DRAWS)
-        indices = rng.integers(
-            0, matrix.shape[0], size=(stop - start, matrix.shape[0])
-        )
+        indices = rng.integers(0, matrix.shape[0], size=(stop - start, matrix.shape[0]))
         estimates[start:stop] = np.median(
             matrix[indices].reshape(stop - start, -1), axis=1
         )
@@ -242,20 +239,26 @@ def main() -> None:
         target_path_seeds=("target_path_seed", "nunique"),
     )
     if not (counts == 100).all().all():
-        raise RuntimeError("Every configuration-condition must contain 100 matched repetitions")
+        raise RuntimeError(
+            "Every configuration-condition must contain 100 matched repetitions"
+        )
     data = (
         runs.groupby(CONDITION + config, dropna=False)[list(METRICS.values())]
         .mean()
         .reset_index()
     )
     if len(data) != 3_888:
-        raise RuntimeError(f"Expected 3,888 clean configuration means, found {len(data)}")
+        raise RuntimeError(
+            f"Expected 3,888 clean configuration means, found {len(data)}"
+        )
     if data[CONDITION].drop_duplicates().shape[0] != 144:
         raise RuntimeError("Expected 144 operating conditions")
 
     pta = data[data["family"].eq("PTA")].copy()
     seta = data[data["family"].eq("SETA")].copy()
-    if set(pta["threshold_mode"]) != set(MODES) or set(pta["gain_scheme"]) != set(GAINS):
+    if set(pta["threshold_mode"]) != set(MODES) or set(pta["gain_scheme"]) != set(
+        GAINS
+    ):
         raise RuntimeError("PTA gain/mode grid is incomplete")
     if set(seta["threshold_mode"]) != set(MODES):
         raise RuntimeError("SETA mode grid is incomplete")
@@ -266,9 +269,13 @@ def main() -> None:
 
     gain_effects.to_csv(HERE / "gain_transfer_condition_effects.csv", index=False)
     gain_summary.to_csv(HERE / "gain_transfer_summary.csv", index=False)
-    seta_effects.to_csv(HERE / "seta_storage_transfer_condition_effects.csv", index=False)
+    seta_effects.to_csv(
+        HERE / "seta_storage_transfer_condition_effects.csv", index=False
+    )
     seta_summary.to_csv(HERE / "seta_storage_transfer_summary.csv", index=False)
-    pta_storage_effects.to_csv(HERE / "pta_storage_transfer_condition_effects.csv", index=False)
+    pta_storage_effects.to_csv(
+        HERE / "pta_storage_transfer_condition_effects.csv", index=False
+    )
     pta_storage_summary.to_csv(HERE / "pta_storage_transfer_summary.csv", index=False)
 
     report = [

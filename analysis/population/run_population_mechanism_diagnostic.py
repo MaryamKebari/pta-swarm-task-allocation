@@ -23,7 +23,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-
 EXPECTED_FTRACKER_SHA256 = (
     "86ba010cdf4fe7d097fdfd3328331bddf54841efa4cdc547156cf809c54d35f9"
 )
@@ -107,7 +106,9 @@ def read_task_columns(path: Path, prefix: str) -> np.ndarray:
     return frame[columns].to_numpy(dtype=np.float64)
 
 
-def load_design(allocation_csv: Path, parameters_csv: Path) -> tuple[pd.DataFrame, dict]:
+def load_design(
+    allocation_csv: Path, parameters_csv: Path
+) -> tuple[pd.DataFrame, dict]:
     allocation = pd.read_csv(allocation_csv)
     design = allocation[
         (allocation["family"] == "PTA")
@@ -134,7 +135,9 @@ def load_design(allocation_csv: Path, parameters_csv: Path) -> tuple[pd.DataFram
         & (params["gain_scheme"] == "Agent")
     ]
     if len(chosen) != 1:
-        raise ValueError(f"Expected one frozen Agent/HT1/latent row, found {len(chosen)}")
+        raise ValueError(
+            f"Expected one frozen Agent/HT1/latent row, found {len(chosen)}"
+        )
     return design, chosen.iloc[0].to_dict()
 
 
@@ -209,8 +212,8 @@ def run_one(
         completed = subprocess.run(
             ["./sim", "params", "opfiles"],
             cwd=work,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            check=False,
+            capture_output=True,
             text=True,
         )
         if completed.returncode != 0:
@@ -219,7 +222,9 @@ def run_one(
             )
         finalstats_files = list(output.glob("run.*/*.finalstats"))
         if not finalstats_files:
-            produced_files = sorted(str(path.relative_to(work)) for path in work.rglob("*"))
+            produced_files = sorted(
+                str(path.relative_to(work)) for path in work.rglob("*")
+            )
             raise RuntimeError(
                 f"No finalstats for population={pop}, rep={rep}. "
                 f"stdout={completed.stdout!r}; stderr={completed.stderr!r}; "
@@ -237,7 +242,9 @@ def run_one(
         stats = {key: float(value) for key, value in stats.items() if key != "run"}
 
     if demand.shape != (MAX_STEPS, TASKS):
-        raise ValueError(f"Unexpected trajectory shape {demand.shape} for {pop=}, {rep=}")
+        raise ValueError(
+            f"Unexpected trajectory shape {demand.shape} for {pop=}, {rep=}"
+        )
     return pop, rep, demand, counts, thresholds, stats
 
 
@@ -269,7 +276,9 @@ def main() -> None:
     pop_index = {pop: index for index, pop in enumerate(POPS)}
     jobs = [row._asdict() for row in design.itertuples(index=False)]
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
-        futures = [pool.submit(run_one, row, gains, args.sim_src, scratch) for row in jobs]
+        futures = [
+            pool.submit(run_one, row, gains, args.sim_src, scratch) for row in jobs
+        ]
         for index, future in enumerate(as_completed(futures), start=1):
             pop, rep, dem, cnt, thr, stats = future.result()
             pidx = pop_index[pop]

@@ -23,10 +23,10 @@ The complete campaign hash record is preserved in
 `data/manifests/source_hashes.json`. The public `configs/params.default` is the
 exact final campaign base parameter snapshot and is also checked by
 `make verify`. The 27 rows in
-`data/parameters/reference_tuned_parameters.csv` are byte for byte identical
-to the archived selected parameter table. The historical Linux binary hash is
-retained for provenance but is not expected to match a binary rebuilt on
-another operating system.
+`data/parameters/reference_tuned_parameters.csv` are also byte for byte
+identical to the archived selected parameter table. The historical Linux
+binary hash is retained for provenance but is not expected to match a binary
+rebuilt on another operating system.
 
 ## Preserved implementation behavior
 

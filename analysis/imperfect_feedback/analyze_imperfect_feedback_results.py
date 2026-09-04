@@ -12,12 +12,12 @@ shared target paths within each condition.
 from pathlib import Path
 
 import matplotlib as mpl
+
 mpl.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.colors import TwoSlopeNorm
-
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HERE = REPO_ROOT / "data" / "processed" / "imperfect_feedback"
@@ -56,9 +56,7 @@ def clustered_bootstrap_median(frame, value_col, cluster_cols, rng, draws=10_000
         matrix = np.stack(clusters)
         for start in range(0, draws, chunk):
             stop = min(start + chunk, draws)
-            indices = rng.integers(
-                0, len(clusters), size=(stop - start, len(clusters))
-            )
+            indices = rng.integers(0, len(clusters), size=(stop - start, len(clusters)))
             samples = matrix[indices].reshape(stop - start, -1)
             estimates[start:stop] = np.median(samples, axis=1)
     else:
@@ -126,7 +124,9 @@ def make_own_clean_pairs(data):
         (data.feedback_noise_alpha == 0) & (data.feedback_bias_alpha == 0),
         config_cols + op_cols + ["R", "R_abs"],
     ].rename(columns={"R": "R_clean", "R_abs": "R_abs_clean"})
-    paired = data.merge(clean, on=config_cols + op_cols, how="left", validate="many_to_one")
+    paired = data.merge(
+        clean, on=config_cols + op_cols, how="left", validate="many_to_one"
+    )
     paired["configuration"] = exact_configuration_id(paired)
     paired["log_R_degradation"] = np.log(paired["R"] / paired["R_clean"])
     paired["log_R_abs_degradation"] = np.log(paired["R_abs"] / paired["R_abs_clean"])
@@ -152,7 +152,9 @@ def make_pta_comparisons(data):
         baseline = baseline[join_cols + ["R", "R_abs"]].rename(
             columns={"R": "R_comparator", "R_abs": "R_abs_comparator"}
         )
-        comparison = pta.merge(baseline, on=join_cols, how="inner", validate="many_to_one")
+        comparison = pta.merge(
+            baseline, on=join_cols, how="inner", validate="many_to_one"
+        )
         comparison["comparator"] = comparator
         comparison["log_R_ratio"] = np.log(comparison["R"] / comparison["R_comparator"])
         comparison["log_R_abs_ratio"] = np.log(
@@ -207,11 +209,15 @@ def plot_own_clean(summary):
     matrices = {}
     for family in METHOD_ORDER:
         subset = summary.loc[summary.family == family]
-        matrix = subset.pivot(
-            index="feedback_bias_alpha",
-            columns="feedback_noise_alpha",
-            values="median_log_R_degradation",
-        ).reindex(index=BETAS, columns=ALPHAS).to_numpy()
+        matrix = (
+            subset.pivot(
+                index="feedback_bias_alpha",
+                columns="feedback_noise_alpha",
+                values="median_log_R_degradation",
+            )
+            .reindex(index=BETAS, columns=ALPHAS)
+            .to_numpy()
+        )
         matrices[family] = matrix
     vmax = max(float(np.nanmax(np.abs(matrix))) for matrix in matrices.values())
     norm = TwoSlopeNorm(vmin=-vmax, vcenter=0, vmax=vmax)
@@ -257,7 +263,9 @@ def plot_own_clean(summary):
     colorbar = fig.colorbar(last_image, cax=colorbar_axis)
     colorbar.set_label(r"Median $\log(R/R_{\mathrm{clean}})$")
     fig.savefig(FIGURE_DIR / "imperfect_feedback_own_clean.pdf", bbox_inches="tight")
-    fig.savefig(FIGURE_DIR / "imperfect_feedback_own_clean.png", dpi=300, bbox_inches="tight")
+    fig.savefig(
+        FIGURE_DIR / "imperfect_feedback_own_clean.png", dpi=300, bbox_inches="tight"
+    )
     plt.close(fig)
 
 
@@ -265,11 +273,15 @@ def plot_pta_advantage(summary):
     matrices = {}
     for comparator in COMPARATOR_ORDER:
         subset = summary.loc[summary.comparator == comparator]
-        matrix = subset.pivot(
-            index="feedback_bias_alpha",
-            columns="feedback_noise_alpha",
-            values="median_log_R_ratio",
-        ).reindex(index=BETAS, columns=ALPHAS).to_numpy()
+        matrix = (
+            subset.pivot(
+                index="feedback_bias_alpha",
+                columns="feedback_noise_alpha",
+                values="median_log_R_ratio",
+            )
+            .reindex(index=BETAS, columns=ALPHAS)
+            .to_numpy()
+        )
         matrices[comparator] = matrix
     vmax = max(float(np.nanmax(np.abs(matrix))) for matrix in matrices.values())
     norm = TwoSlopeNorm(vmin=-vmax, vcenter=0, vmax=vmax)
@@ -291,10 +303,18 @@ def plot_pta_advantage(summary):
             ax.set_ylabel(r"Bias level, $\beta$")
         else:
             ax.set_ylabel("")
-    colorbar = fig.colorbar(last_image, ax=axes.ravel().tolist(), shrink=0.85, pad=0.025)
+    colorbar = fig.colorbar(
+        last_image, ax=axes.ravel().tolist(), shrink=0.85, pad=0.025
+    )
     colorbar.set_label(r"Median $\log(R_{\mathrm{PTA}}/R_{\mathrm{comparator}})$")
-    fig.savefig(FIGURE_DIR / "imperfect_feedback_pta_comparators.pdf", bbox_inches="tight")
-    fig.savefig(FIGURE_DIR / "imperfect_feedback_pta_comparators.png", dpi=300, bbox_inches="tight")
+    fig.savefig(
+        FIGURE_DIR / "imperfect_feedback_pta_comparators.pdf", bbox_inches="tight"
+    )
+    fig.savefig(
+        FIGURE_DIR / "imperfect_feedback_pta_comparators.png",
+        dpi=300,
+        bbox_inches="tight",
+    )
     plt.close(fig)
 
 
@@ -349,7 +369,9 @@ def main():
             percent_reduction_from_log_ratio(comparison_summary[f"median_log_{metric}"])
         )
         comparison_summary[f"ci_low_{metric}_reduction_percent"] = (
-            percent_reduction_from_log_ratio(comparison_summary[f"ci_high_log_{metric}"])
+            percent_reduction_from_log_ratio(
+                comparison_summary[f"ci_high_log_{metric}"]
+            )
         )
         comparison_summary[f"ci_high_{metric}_reduction_percent"] = (
             percent_reduction_from_log_ratio(comparison_summary[f"ci_low_log_{metric}"])
@@ -387,7 +409,13 @@ def main():
         own_summary.loc[
             (own_summary.feedback_noise_alpha == 0.4)
             & (own_summary.feedback_bias_alpha == 0.2),
-            ["family", "units", "median_R_degradation_percent", "ci_low_R_degradation_percent", "ci_high_R_degradation_percent"],
+            [
+                "family",
+                "units",
+                "median_R_degradation_percent",
+                "ci_low_R_degradation_percent",
+                "ci_high_R_degradation_percent",
+            ],
         ].to_string(index=False)
     )
     print("\nStrongest-severity PTA comparison:")

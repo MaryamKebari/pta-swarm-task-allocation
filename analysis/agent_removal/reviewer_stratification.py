@@ -5,7 +5,6 @@ from pathlib import Path
 
 import pandas as pd
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 BASE = REPO_ROOT / "data" / "processed" / "agent_removal"
 
@@ -82,7 +81,9 @@ def main() -> None:
     )
     increments = wide.diff(axis=1).iloc[:, 1:]
     print("\nCondition-level monotonicity of aggregate PTA post-removal R")
-    print(f"Strictly increasing across every severity: {(increments > 0).all(axis=1).sum()}/{len(wide)}")
+    print(
+        f"Strictly increasing across every severity: {(increments > 0).all(axis=1).sum()}/{len(wide)}"
+    )
     print(f"50% greater than 40%: {(wide[50] > wide[40]).sum()}/{len(wide)}")
     print(f"40% greater than 30%: {(wide[40] > wide[30]).sum()}/{len(wide)}")
 

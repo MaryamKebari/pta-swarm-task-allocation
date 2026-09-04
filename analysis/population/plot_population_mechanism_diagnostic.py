@@ -7,12 +7,12 @@ import argparse
 from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from scipy import stats
-
 
 PTA_BLUE = "#0072B2"
 TASK_ORANGE = "#D55E00"
@@ -44,28 +44,24 @@ def main() -> None:
         across_run_variance = np.var(fractions, axis=0, ddof=1)
         rms_sd.append(float(np.sqrt(np.mean(across_run_variance))))
     rms_sd = np.asarray(rms_sd)
-    slope, intercept = np.polyfit(np.log(populations), np.log(rms_sd), 1)
+    slope, _intercept = np.polyfit(np.log(populations), np.log(rms_sd), 1)
     regression = stats.linregress(np.log(populations), np.log(rms_sd))
     slope_critical = stats.t.ppf(0.975, len(populations) - 2)
     slope_ci_low = slope - slope_critical * regression.stderr
     slope_ci_high = slope + slope_critical * regression.stderr
 
-    n500 = validation[validation["pop"] == 500].sort_values(
-        ["R_replayed", "rep"]
-    )
+    n500 = validation[validation["pop"] == 500].sort_values(["R_replayed", "rep"])
     representative_row = n500.iloc[(len(n500) - 1) // 2]
     rep = int(representative_row["rep"])
     pidx = int(np.flatnonzero(populations == 500)[0])
     time = np.arange(demand.shape[2])
     signed_arrival = (demand[pidx, rep, :, 0] - demand[pidx, rep, :, 2]) / L_T
-    normalized_recruited_service = STEP_RATIO * (
-        counts[pidx, rep, :, 0] - counts[pidx, rep, :, 2]
-    ) / 500.0
+    normalized_recruited_service = (
+        STEP_RATIO * (counts[pidx, rep, :, 0] - counts[pidx, rep, :, 2]) / 500.0
+    )
     task1_threshold = thresholds[pidx, rep, :, 0]
     task3_threshold = thresholds[pidx, rep, :, 2]
-    correlation = float(
-        np.corrcoef(signed_arrival, normalized_recruited_service)[0, 1]
-    )
+    correlation = float(np.corrcoef(signed_arrival, normalized_recruited_service)[0, 1])
     n500_correlations = np.asarray(
         [
             np.corrcoef(
@@ -79,10 +75,10 @@ def main() -> None:
         dtype=float,
     )
     if np.isnan(n500_correlations).any():
-        raise RuntimeError("Undefined demand--recruitment correlation in n=500 repetitions")
-    correlation_low, correlation_high = np.quantile(
-        n500_correlations, [0.025, 0.975]
-    )
+        raise RuntimeError(
+            "Undefined demand--recruitment correlation in n=500 repetitions"
+        )
+    correlation_low, correlation_high = np.quantile(n500_correlations, [0.025, 0.975])
 
     summary = pd.DataFrame(
         {
@@ -189,7 +185,11 @@ def main() -> None:
         va="top",
         fontsize=10.2,
         color="#333333",
-        bbox={"boxstyle": "round,pad=0.28", "facecolor": "#EAF4FA", "edgecolor": "none"},
+        bbox={
+            "boxstyle": "round,pad=0.28",
+            "facecolor": "#EAF4FA",
+            "edgecolor": "none",
+        },
     )
     ax.text(
         175,

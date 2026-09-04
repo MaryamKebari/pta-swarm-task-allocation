@@ -15,7 +15,6 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HERE = REPO_ROOT / "data" / "processed" / "clean_transfer"
 INPUT = Path(
@@ -68,14 +67,18 @@ def bootstrap_range_cluster_median(
         .to_numpy(float)
     )
     if matrix.shape != (144, 3) or np.isnan(matrix).any():
-        raise RuntimeError(f"Expected a complete 144 by 3 range matrix, found {matrix.shape}")
+        raise RuntimeError(
+            f"Expected a complete 144 by 3 range matrix, found {matrix.shape}"
+        )
     rng = np.random.default_rng(seed)
     estimates = np.empty(draws, dtype=float)
     batch = 500
     for start in range(0, draws, batch):
         stop = min(start + batch, draws)
         indices = rng.integers(0, matrix.shape[0], size=(stop - start, matrix.shape[0]))
-        estimates[start:stop] = np.median(matrix[indices].reshape(stop - start, -1), axis=1)
+        estimates[start:stop] = np.median(
+            matrix[indices].reshape(stop - start, -1), axis=1
+        )
     median = float(np.median(matrix))
     low, high = np.quantile(estimates, [0.025, 0.975])
     return median, float(low), float(high)
@@ -106,7 +109,9 @@ def bootstrap_condition_cluster_median(
     for start in range(0, draws, batch):
         stop = min(start + batch, draws)
         indices = rng.integers(0, matrix.shape[0], size=(stop - start, matrix.shape[0]))
-        estimates[start:stop] = np.median(matrix[indices].reshape(stop - start, -1), axis=1)
+        estimates[start:stop] = np.median(
+            matrix[indices].reshape(stop - start, -1), axis=1
+        )
     median = float(np.median(matrix))
     low, high = np.quantile(estimates, [0.025, 0.975])
     return median, float(low), float(high)
@@ -146,7 +151,9 @@ def main() -> None:
         target_path_seeds=("target_path_seed", "nunique"),
     )
     if not (counts == 100).all().all():
-        raise RuntimeError("Every clean configuration-condition must have 100 matched repetitions")
+        raise RuntimeError(
+            "Every clean configuration-condition must have 100 matched repetitions"
+        )
     data = (
         runs.groupby(CONDITION + config, dropna=False)[list(METRICS)]
         .mean()
@@ -160,12 +167,8 @@ def main() -> None:
 
     # Parameters are already frozen. Selecting the lowest-R configuration within
     # each family gives every family the same condition-level oracle treatment.
-    selected = data.loc[
-        data.groupby(CONDITION + ["family"])["R"].idxmin()
-    ].copy()
-    winners = selected.loc[
-        selected.groupby(CONDITION)["R"].idxmin()
-    ].copy()
+    selected = data.loc[data.groupby(CONDITION + ["family"])["R"].idxmin()].copy()
+    winners = selected.loc[selected.groupby(CONDITION)["R"].idxmin()].copy()
 
     winner_counts = (
         winners.groupby(["family", "run_method_id"])
@@ -210,14 +213,20 @@ def main() -> None:
     # experimental factor. These summaries use one value per operating
     # condition: the lowest-R PTA configuration and the lowest-R non-PTA
     # configuration. The log ratio keeps relative improvements symmetric.
-    best_alternative = selected[~selected["family"].eq("PTA")].loc[
-        lambda frame: frame.groupby(CONDITION)["R"].idxmin()
-    ].set_index(CONDITION)
-    condition_effects = pta[["R"]].join(
-        best_alternative[["R", "family"]],
-        lsuffix="_pta",
-        rsuffix="_alternative",
-    ).reset_index()
+    best_alternative = (
+        selected[~selected["family"].eq("PTA")]
+        .loc[lambda frame: frame.groupby(CONDITION)["R"].idxmin()]
+        .set_index(CONDITION)
+    )
+    condition_effects = (
+        pta[["R"]]
+        .join(
+            best_alternative[["R", "family"]],
+            lsuffix="_pta",
+            rsuffix="_alternative",
+        )
+        .reset_index()
+    )
     condition_effects["log_ratio"] = np.log(
         condition_effects["R_pta"] / condition_effects["R_alternative"]
     )
@@ -245,9 +254,7 @@ def main() -> None:
                     "level": pattern_names.get(level, level),
                     "operating_conditions": len(group),
                     "median_best_pta_R": float(group["R_pta"].median()),
-                    "median_best_alternative_R": float(
-                        group["R_alternative"].median()
-                    ),
+                    "median_best_alternative_R": float(group["R_alternative"].median()),
                     "median_pta_reduction_percent": reduction(
                         float(group["log_ratio"].median())
                     ),
@@ -258,7 +265,11 @@ def main() -> None:
     # Paired endpoint checks distinguish changes in PTA's absolute error from
     # changes in its relative advantage over the best alternative.
     endpoint_rows: list[dict[str, object]] = []
-    for factor, low, high in [("pop", 50, 1000), ("n", 4, 12), ("step_ratio", 1.5, 2.5)]:
+    for factor, low, high in [
+        ("pop", 50, 1000),
+        ("n", 4, 12),
+        ("step_ratio", 1.5, 2.5),
+    ]:
         match_keys = [key for key in CONDITION if key != factor]
         endpoints = condition_effects[condition_effects[factor].isin([low, high])]
         pta_wide = endpoints.pivot(index=match_keys, columns=factor, values="R_pta")
@@ -294,17 +305,19 @@ def main() -> None:
     selected_by_range = data.loc[
         data.groupby(RANGE_CONDITION + ["family"])["R"].idxmin()
     ].copy()
-    pta_by_range = selected_by_range[
-        selected_by_range["family"].eq("PTA")
-    ].set_index(RANGE_CONDITION)
+    pta_by_range = selected_by_range[selected_by_range["family"].eq("PTA")].set_index(
+        RANGE_CONDITION
+    )
     range_rows: list[dict[str, object]] = []
     for comparator_index, comparator in enumerate(COMPARATORS):
         baseline = selected_by_range[
             selected_by_range["family"].eq(comparator)
         ].set_index(RANGE_CONDITION)
-        paired = pta_by_range[list(METRICS)].join(
-            baseline[list(METRICS)], lsuffix="_pta", rsuffix="_comparator"
-        ).reset_index()
+        paired = (
+            pta_by_range[list(METRICS)]
+            .join(baseline[list(METRICS)], lsuffix="_pta", rsuffix="_comparator")
+            .reset_index()
+        )
         record = {
             "comparator": comparator,
             "operating_condition_ranges": len(paired),
@@ -332,16 +345,20 @@ def main() -> None:
 
     # Threshold-range summaries show both relative effectiveness within a
     # range and which range supplied the lowest-R PTA implementation.
-    best_range_alternative = selected_by_range[
-        ~selected_by_range["family"].eq("PTA")
-    ].loc[
-        lambda frame: frame.groupby(RANGE_CONDITION)["R"].idxmin()
-    ].set_index(RANGE_CONDITION)
-    range_effects = pta_by_range[["R"]].join(
-        best_range_alternative[["R", "family"]],
-        lsuffix="_pta",
-        rsuffix="_alternative",
-    ).reset_index()
+    best_range_alternative = (
+        selected_by_range[~selected_by_range["family"].eq("PTA")]
+        .loc[lambda frame: frame.groupby(RANGE_CONDITION)["R"].idxmin()]
+        .set_index(RANGE_CONDITION)
+    )
+    range_effects = (
+        pta_by_range[["R"]]
+        .join(
+            best_range_alternative[["R", "family"]],
+            lsuffix="_pta",
+            rsuffix="_alternative",
+        )
+        .reset_index()
+    )
     range_effects["log_ratio"] = np.log(
         range_effects["R_pta"] / range_effects["R_alternative"]
     )
@@ -415,8 +432,7 @@ def main() -> None:
         )
         pta_runs = pta_runs.loc[
             pta_runs["run_method_id"].eq(pta_runs["pta_run_method_id"]),
-            RANGE_CONDITION
-            + ["rep", "seed", "target_path_seed", "run_method_id", "R"],
+            RANGE_CONDITION + ["rep", "seed", "target_path_seed", "run_method_id", "R"],
         ].rename(
             columns={
                 "seed": "pta_seed",
@@ -434,8 +450,7 @@ def main() -> None:
             comparator_runs["run_method_id"].eq(
                 comparator_runs["comparator_run_method_id"]
             ),
-            RANGE_CONDITION
-            + ["rep", "seed", "target_path_seed", "run_method_id", "R"],
+            RANGE_CONDITION + ["rep", "seed", "target_path_seed", "run_method_id", "R"],
         ].rename(
             columns={
                 "seed": "comparator_seed",
@@ -456,26 +471,24 @@ def main() -> None:
             )
         if not paired_runs["pta_seed"].eq(paired_runs["comparator_seed"]).all():
             raise RuntimeError(f"Simulation seeds are not paired for {comparator}")
-        if not paired_runs["pta_target_path_seed"].eq(
-            paired_runs["comparator_target_path_seed"]
-        ).all():
+        if (
+            not paired_runs["pta_target_path_seed"]
+            .eq(paired_runs["comparator_target_path_seed"])
+            .all()
+        ):
             raise RuntimeError(f"Target-path seeds are not paired for {comparator}")
 
-        for condition_values, group in paired_runs.groupby(
-            RANGE_CONDITION, sort=True
-        ):
-            differences = group["pta_R"].to_numpy() - group[
-                "comparator_R"
-            ].to_numpy()
+        for condition_values, group in paired_runs.groupby(RANGE_CONDITION, sort=True):
+            differences = group["pta_R"].to_numpy() - group["comparator_R"].to_numpy()
             _, p_value = stats.wilcoxon(differences, alternative="two-sided")
             test_rows.append(
                 {
                     **dict(zip(RANGE_CONDITION, condition_values)),
                     "comparator": comparator,
                     "pta_run_method_id": group["pta_run_method_id"].iloc[0],
-                    "comparator_run_method_id": group[
-                        "comparator_run_method_id"
-                    ].iloc[0],
+                    "comparator_run_method_id": group["comparator_run_method_id"].iloc[
+                        0
+                    ],
                     "paired_repetitions": len(group),
                     "median_paired_difference_R": float(np.median(differences)),
                     "wilcoxon_two_sided_p": float(p_value),
@@ -505,12 +518,13 @@ def main() -> None:
         .reset_index()
     )
     significant_lower = (
-        confirmatory_tests["pta_median_lower"]
-        & confirmatory_tests["bh_significant"]
-    ).groupby(confirmatory_tests["comparator"], sort=False).sum()
-    confirmatory_summary["bh_significant_pta_lower"] = confirmatory_summary[
-        "comparator"
-    ].map(significant_lower).astype(int)
+        (confirmatory_tests["pta_median_lower"] & confirmatory_tests["bh_significant"])
+        .groupby(confirmatory_tests["comparator"], sort=False)
+        .sum()
+    )
+    confirmatory_summary["bh_significant_pta_lower"] = (
+        confirmatory_summary["comparator"].map(significant_lower).astype(int)
+    )
     confirmatory_summary.to_csv(
         HERE / "range_matched_confirmatory_summary.csv", index=False
     )
@@ -587,17 +601,19 @@ def main() -> None:
     equal_by_range = equal_budget.loc[
         equal_budget.groupby(RANGE_CONDITION + ["family"])["R"].idxmin()
     ].copy()
-    global_pta_by_range = equal_by_range[
-        equal_by_range["family"].eq("PTA")
-    ].set_index(RANGE_CONDITION)
+    global_pta_by_range = equal_by_range[equal_by_range["family"].eq("PTA")].set_index(
+        RANGE_CONDITION
+    )
     equal_range_rows: list[dict[str, object]] = []
     for comparator_index, comparator in enumerate(COMPARATORS):
-        baseline = equal_by_range[
-            equal_by_range["family"].eq(comparator)
-        ].set_index(RANGE_CONDITION)
-        paired = global_pta_by_range[list(METRICS)].join(
-            baseline[list(METRICS)], lsuffix="_pta", rsuffix="_comparator"
-        ).reset_index()
+        baseline = equal_by_range[equal_by_range["family"].eq(comparator)].set_index(
+            RANGE_CONDITION
+        )
+        paired = (
+            global_pta_by_range[list(METRICS)]
+            .join(baseline[list(METRICS)], lsuffix="_pta", rsuffix="_comparator")
+            .reset_index()
+        )
         record = {
             "comparator": comparator,
             "operating_condition_ranges": len(paired),

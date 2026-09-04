@@ -10,10 +10,8 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.patches import Patch
-import numpy as np
 import pandas as pd
-
+from matplotlib.patches import Patch
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 ROOT = SCRIPT_DIR.parents[1]
@@ -25,6 +23,7 @@ INPUT = Path(
         ROOT / "data" / "raw" / "allocation_grid" / "per_run_results.csv",
     )
 )
+CACHED_WINNERS = HERE / "winner_by_condition.csv"
 
 POPS = [50, 100, 500, 1000]
 TASKS = [4, 8, 12]
@@ -47,6 +46,12 @@ RANGE_LINESTYLES = {"HM": "-", "HT1": "--", "HT2": ":"}
 
 
 def load_winners() -> pd.DataFrame:
+    if not INPUT.exists():
+        winners = pd.read_csv(CACHED_WINNERS)
+        if len(winners) != 144:
+            raise RuntimeError(f"Expected 144 cached winners; found {len(winners)}")
+        return winners
+
     columns = CONDITION + [
         "family",
         "threshold_range",
@@ -68,11 +73,7 @@ def load_winners() -> pd.DataFrame:
         "gain_scheme",
         "run_method_id",
     ]
-    means = (
-        runs.groupby(CONDITION + config, dropna=False)["R"]
-        .mean()
-        .reset_index()
-    )
+    means = runs.groupby(CONDITION + config, dropna=False)["R"].mean().reset_index()
     if len(means) != 3_888:
         raise RuntimeError(f"Expected 3,888 configuration means; found {len(means):,}")
 
@@ -83,7 +84,9 @@ def load_winners() -> pd.DataFrame:
     if set(winners["family"]) != {"PTA"}:
         raise RuntimeError("A non-PTA family appears in the frozen-reference winners")
     if set(winners["gain_scheme"]) != {"Agent"}:
-        raise RuntimeError("The winning frozen-reference configurations are not all Agent PTA")
+        raise RuntimeError(
+            "The winning frozen-reference configurations are not all Agent PTA"
+        )
     return winners
 
 
@@ -114,8 +117,7 @@ def make_figure(winners: pd.DataFrame) -> None:
             for yi, population in enumerate(POPS):
                 for xi, step_ratio in enumerate(STEPS):
                     match = local[
-                        local["pop"].eq(population)
-                        & local["step_ratio"].eq(step_ratio)
+                        local["pop"].eq(population) & local["step_ratio"].eq(step_ratio)
                     ]
                     if len(match) != 1:
                         raise RuntimeError(
@@ -168,9 +170,24 @@ def make_figure(winners: pd.DataFrame) -> None:
             ax.set_ylim(-0.5, len(POPS) - 0.5)
 
     handles = [
-        Patch(facecolor=RANGE_FILL_COLORS["HM"], edgecolor="#33434D", linestyle="-", label="HM"),
-        Patch(facecolor=RANGE_FILL_COLORS["HT1"], edgecolor="#33434D", linestyle="--", label="HT1"),
-        Patch(facecolor=RANGE_FILL_COLORS["HT2"], edgecolor="#33434D", linestyle=":", label="HT2"),
+        Patch(
+            facecolor=RANGE_FILL_COLORS["HM"],
+            edgecolor="#33434D",
+            linestyle="-",
+            label="HM",
+        ),
+        Patch(
+            facecolor=RANGE_FILL_COLORS["HT1"],
+            edgecolor="#33434D",
+            linestyle="--",
+            label="HT1",
+        ),
+        Patch(
+            facecolor=RANGE_FILL_COLORS["HT2"],
+            edgecolor="#33434D",
+            linestyle=":",
+            label="HT2",
+        ),
         Patch(facecolor="none", edgecolor="none", label="C: clamped; L: latent"),
     ]
     fig.legend(
@@ -199,12 +216,11 @@ def make_figure(winners: pd.DataFrame) -> None:
 
 def main() -> None:
     winners = load_winners()
-    winners.to_csv(HERE / "winner_by_condition.csv", index=False)
+    if INPUT.exists():
+        winners.to_csv(CACHED_WINNERS, index=False)
     make_figure(winners)
     print(
-        winners.groupby(
-            ["family", "threshold_range", "threshold_mode", "gain_scheme"]
-        )
+        winners.groupby(["family", "threshold_range", "threshold_mode", "gain_scheme"])
         .size()
         .rename("conditions_won")
         .reset_index()

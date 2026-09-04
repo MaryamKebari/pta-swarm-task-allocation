@@ -13,7 +13,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-
 SCRIPT_DIR = Path(__file__).resolve().parent
 ROOT = SCRIPT_DIR.parents[1]
 HERE = ROOT / "data" / "processed" / "clean_transfer"
@@ -68,11 +67,7 @@ def load_effects() -> pd.DataFrame:
         "gain_scheme",
         "run_method_id",
     ]
-    means = (
-        runs.groupby(CONDITION + config, dropna=False)["R"]
-        .mean()
-        .reset_index()
-    )
+    means = runs.groupby(CONDITION + config, dropna=False)["R"].mean().reset_index()
     if len(means) != 3_888:
         raise RuntimeError(f"Expected 3,888 configuration means, found {len(means):,}")
 
@@ -80,16 +75,24 @@ def load_effects() -> pd.DataFrame:
         means.groupby(RANGE_CONDITION + ["family"])["R"].idxmin()
     ].copy()
     pta = selected[selected["family"].eq("PTA")].set_index(RANGE_CONDITION)
-    alternative = selected[~selected["family"].eq("PTA")].loc[
-        lambda frame: frame.groupby(RANGE_CONDITION)["R"].idxmin()
-    ].set_index(RANGE_CONDITION)
-    effects = pta[["R"]].join(
-        alternative[["R", "family"]],
-        lsuffix="_pta",
-        rsuffix="_alternative",
-    ).reset_index()
+    alternative = (
+        selected[~selected["family"].eq("PTA")]
+        .loc[lambda frame: frame.groupby(RANGE_CONDITION)["R"].idxmin()]
+        .set_index(RANGE_CONDITION)
+    )
+    effects = (
+        pta[["R"]]
+        .join(
+            alternative[["R", "family"]],
+            lsuffix="_pta",
+            rsuffix="_alternative",
+        )
+        .reset_index()
+    )
     if len(effects) != 432:
-        raise RuntimeError(f"Expected 432 condition-range effects, found {len(effects)}")
+        raise RuntimeError(
+            f"Expected 432 condition-range effects, found {len(effects)}"
+        )
     effects["reduction_percent"] = 100.0 * (
         1.0 - effects["R_pta"] / effects["R_alternative"]
     )
@@ -116,7 +119,10 @@ def summarize(effects: pd.DataFrame) -> pd.DataFrame:
                     )
                 median, low, high = bootstrap_median(
                     values,
-                    seed=20260831 + factor_index * 1000 + range_index * 100 + level_index,
+                    seed=20260831
+                    + factor_index * 1000
+                    + range_index * 100
+                    + level_index,
                 )
                 rows.append(
                     {
@@ -148,15 +154,25 @@ def make_figure(summary: pd.DataFrame) -> None:
     )
     fig, axes = plt.subplots(1, 2, figsize=(7.15, 3.85), sharey=True)
     panels = (
-        (axes[0], "pop", (50, 100, 500, 1000), "(a) Population size", "Population size, $n$"),
+        (
+            axes[0],
+            "pop",
+            (50, 100, 500, 1000),
+            "(a) Population size",
+            "Population size, $n$",
+        ),
         (axes[1], "n", (4, 8, 12), "(b) Task count", "Number of tasks, $m$"),
     )
     for ax, factor, levels, title, xlabel in panels:
         for threshold_range in RANGES:
-            data = summary[
-                summary["factor"].eq(factor)
-                & summary["threshold_range"].eq(threshold_range)
-            ].set_index("level").loc[list(levels)]
+            data = (
+                summary[
+                    summary["factor"].eq(factor)
+                    & summary["threshold_range"].eq(threshold_range)
+                ]
+                .set_index("level")
+                .loc[list(levels)]
+            )
             x = np.arange(len(levels), dtype=float)
             y = data["median_reduction_percent"].to_numpy(float)
             low = data["ci_low"].to_numpy(float)
@@ -181,7 +197,7 @@ def make_figure(summary: pd.DataFrame) -> None:
         ax.set_xticks(np.arange(len(levels)), [str(level) for level in levels])
         ax.grid(axis="y", color="#D9D9D9", linewidth=0.6)
         ax.spines[["top", "right"]].set_visible(False)
-    axes[0].set_ylabel("Median PTA reduction in $R$ (\%)")
+    axes[0].set_ylabel(r"Median PTA reduction in $R$ (\%)")
     handles, labels = axes[0].get_legend_handles_labels()
     fig.legend(
         handles,
@@ -202,7 +218,9 @@ def make_figure(summary: pd.DataFrame) -> None:
     )
     fig.tight_layout(rect=(0, 0.07, 1, 0.88), w_pad=2.0)
     FIGURES.mkdir(parents=True, exist_ok=True)
-    fig.savefig(FIGURES / "frozen_reference_population_task_scaling.pdf", bbox_inches="tight")
+    fig.savefig(
+        FIGURES / "frozen_reference_population_task_scaling.pdf", bbox_inches="tight"
+    )
     fig.savefig(
         FIGURES / "frozen_reference_population_task_scaling.png",
         dpi=300,

@@ -1,52 +1,58 @@
-# Proportional, Integral, and Derivative Threshold Adaptation
+# PTA for Dynamic Swarm Task Allocation
 
 [![CI](https://github.com/MaryamKebari/pta-swarm-task-allocation/actions/workflows/ci.yml/badge.svg)](https://github.com/MaryamKebari/pta-swarm-task-allocation/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Cite this repository](https://img.shields.io/badge/cite-CITATION.cff-6f42c1.svg)](CITATION.cff)
 
-This repository contains the simulation code, selected parameters, analysis
-scripts, and processed results for **“Feedback Regulation of Threshold
-Adaptation for Dynamic Swarm Task Allocation.”**
+Companion code, parameters, and processed results for
 
-## Overview
+**“Feedback Regulation of Threshold Adaptation for Dynamic Swarm Task Allocation.”**
 
-The study asks whether a swarm can improve dynamic task allocation by updating
-each agent's response thresholds from shared task allocation feedback.
-Proportional, Integral, and Derivative Threshold Adaptation (PTA) combines:
+The repository is organized so that a paper reader can do three things without
+guessing:
+
+1. **Inspect** the method and the verified simulator.
+2. **Regenerate** the paper figures from committed tables (minutes).
+3. **Re-run** the experimental campaigns if needed (cluster-scale).
+
+You do **not** need the multi-gigabyte raw run files to inspect the reported
+aggregates or regenerate the figures.
+
+## What PTA is
+
+Each agent has response thresholds that decide which tasks it will take.
+Proportional, Integral, and Derivative Threshold Adaptation (PTA) updates those
+thresholds from shared allocation feedback using three signals:
 
 1. the current signed allocation error;
 2. a bounded, leaky history of that error;
 3. the recent change in the nonnegative stimulus used for task selection.
 
-PTA is compared with four threshold update methods:
+PTA is compared with four alternatives:
 
-- constant thresholds (CT);
-- learning and forgetting threshold adaptation (LFTA);
-- sign based threshold adaptation (SBTA);
-- single error threshold adaptation (SETA).
-
-The experiments examine performance across population sizes, task counts,
-capacity levels, demand classes, threshold ranges, stored threshold modes, and
-gain schemes. Separate experiments test the roles of the integral and
-derivative terms, agent removal, and imperfect feedback.
+| Acronym | Update rule |
+|---|---|
+| CT | constant thresholds, no adaptation |
+| LFTA | learning and forgetting |
+| SBTA | sign-based updates |
+| SETA | single-error updates |
+| PTA | proportional, integral, and derivative updates |
 
 ## Start here
 
-| If you want to... | Go to... |
+| If you want to... | Open this |
 |---|---|
+| Map a paper table, figure, or conclusion to code | [Paper to code map](docs/PAPER_TRACEABILITY.md) |
 | Understand PTA and the comparison methods | [Method definitions](docs/METHODS.md) |
-| See exactly which experiments are run | [Experiment design](docs/EXPERIMENTS.md) |
-| Find a file or understand the folder structure | [Repository map](docs/REPOSITORY_MAP.md) |
-| Inspect the available data and column definitions | [Data guide](docs/DATA.md) |
-| Reproduce the analysis | [Reproducibility guide](docs/REPRODUCIBILITY.md) |
-| Verify that this is the final simulator version | [Provenance record](docs/PROVENANCE.md) |
-| Interpret the figures and their source tables | [Figure guide](docs/FIGURES.md) |
+| See the exact experimental grids | [Experiment design](docs/EXPERIMENTS.md) |
+| Find a file in the repository | [Repository map](docs/REPOSITORY_MAP.md) |
+| Regenerate or interpret figures | [Figure guide](docs/FIGURES.md) |
+| Re-run analyses or full campaigns | [Reproducibility guide](docs/REPRODUCIBILITY.md) |
+| Confirm this is the final simulator | [Provenance record](docs/PROVENANCE.md) |
 
-Only one simulator source tree is included. Its 23 compiled source files and
-the final base parameter file are checked against recorded SHA 256 hashes by
-`make verify`.
+A one-page index of all documentation is in [`docs/README.md`](docs/README.md).
 
-## Quick verification
+## Quick start
 
 Requirements: GCC or Clang, GNU Make, and Python 3.10 or newer.
 
@@ -62,68 +68,94 @@ python -m pip install -r requirements.txt
 make build
 make smoke
 make test
-make verify
 make figures
+make verify
 ```
 
-`make smoke` runs a short deterministic PTA experiment in a temporary
-directory. `make test` checks the simulator and processed data contracts.
-`make verify` checks the experimental grid, source provenance, portability,
-and common secret or personal path patterns. `make figures` regenerates the
-included figures from the processed tables.
+| Command | What it does |
+|---|---|
+| `make smoke` | short deterministic PTA run in a temporary directory |
+| `make test` | simulator contracts plus archived CT, LFTA, SBTA, SETA, and PTA values |
+| `make figures` | regenerate paper-facing figures from `data/processed` |
+| `make verify` | check the experimental grid, source hashes, and portability |
+| `make paper-audit` | run the public checks together |
+
+## Repository layout
+
+```text
+simulator/src     verified C simulator (do not reformat; hashes are checked)
+configs/          method and experiment specifications
+experiments/      resumable tuning and validation runners
+data/parameters/  selected reference-tuned parameters
+data/manifests/   source hashes, seed maps, and audits
+data/processed/   compact tables used by the paper figures and tests
+analysis/         statistics and plotting, grouped by experiment
+figures/          regenerated publication figures
+docs/             method, data, and reproduction guides
+tests/            simulator and data-contract tests
+```
+
+[`docs/REPOSITORY_MAP.md`](docs/REPOSITORY_MAP.md) explains how these folders
+connect. [`simulator/README.md`](simulator/README.md) maps each C file to its
+role in the paper.
 
 ## Experimental workflow
 
 ```mermaid
 flowchart LR
-    A[Reference setting] --> B[Tune parameters]
+    A[Reference setting<br/>500 agents, 4 tasks,<br/>s = 2.0, iterative gradual] --> B[Tune parameters]
     B --> C[Freeze selected parameters]
-    C --> D[Clean feedback evaluation]
+    C --> D[Clean feedback grid]
     C --> E[Controller ablation]
     C --> F[Agent removal]
     C --> G[Imperfect feedback]
-    D --> H[Statistical analysis]
+    D --> H[Paired statistical analysis]
     E --> H
     F --> H
     G --> H
     H --> I[Paper tables and figures]
 ```
 
-## Experimental design at a glance
+Adaptive methods are tuned once at the reference setting and then evaluated
+without retuning. Every reported run lasts 1,000 steps. Each tested condition
+uses 100 repetitions with seeds matched across methods.
 
-| Experiment | Population | Tasks | Step ratio | Demand | Purpose |
-|---|---:|---:|---:|---|---|
-| Allocation accuracy | 50, 100, 500, 1000 | 4, 8, 12 | 1.5, 2.0, 2.5 | Four classes | Test parameter transfer across operating conditions |
-| PTA term ablation | 500 | 4, 12 | 1.5, 2.5 | Repeated reversal and plateau | Identify the roles of integral and derivative action |
-| Agent removal | 50, 100, 500, 1000 | 4, 8, 12 | 1.5, 2.0, 2.5 | Four classes | Measure performance after removing 0% to 50% of agents |
-| Imperfect feedback | 500 | 4, 12 | 1.5, 2.0, 2.5 | Four classes | Test Gaussian noise and task fixed bias |
+| Experiment | Population | Tasks | Step ratio | Purpose |
+|---|---:|---:|---:|---|
+| Allocation accuracy | 50, 100, 500, 1000 | 4, 8, 12 | 1.5, 2.0, 2.5 | Transfer across operating conditions |
+| PTA term ablation | 500 | 4, 12 | 1.5, 2.5 | Roles of integral and derivative action |
+| Agent removal | 50, 100, 500, 1000 | 4, 8, 12 | 1.5, 2.0, 2.5 | Performance after 0% to 50% removal |
+| Imperfect feedback | 500 | 4, 12 | 1.5, 2.0, 2.5 | Gaussian noise and task-fixed bias |
 
-Every reported run contains 1,000 time steps. Each tested condition uses 100
-repetitions with seeds matched across methods. Adaptive configurations are
-tuned at one reference setting and then evaluated without retuning. The
-[experiment design](docs/EXPERIMENTS.md) gives the complete factor definitions
-and comparison rules.
+## Re-run the campaigns
 
-## Repository contents
+Always run the small checks first:
 
-| Path | Contents |
-|---|---|
-| [`simulator/src`](simulator/src) | Verified C simulator source |
-| [`configs`](configs) | Experimental design and simulator settings |
-| [`data/parameters`](data/parameters) | Selected reference tuned parameters |
-| [`data/manifests`](data/manifests) | Source hashes and audit records |
-| [`data/processed`](data/processed) | Compact data used for tables and figures |
-| [`analysis`](analysis) | Statistical analysis and plotting scripts |
-| [`figures`](figures) | Regenerated paper figures |
-| [`docs`](docs) | Detailed method, data, and reproduction guides |
-| [`tests`](tests) | Simulator and data contract tests |
+```bash
+make campaign-smoke
+make tuning-smoke
+```
 
-The multi gigabyte per run result files are not stored in Git. The processed
-tables needed to inspect the reported aggregates and regenerate the principal
-figures are included. The [data guide](docs/DATA.md) documents the raw file
-schemas and expected locations.
+The full commands are resumable and use the paper seed maps:
+
+```bash
+python experiments/tune_reference.py --output data/raw/reference_tuning
+python experiments/run_campaign.py clean
+python experiments/run_campaign.py ablation
+python experiments/run_campaign.py removal
+python experiments/run_campaign.py feedback
+```
+
+These campaigns contain millions of simulator calls. See
+[`docs/REPRODUCIBILITY.md`](docs/REPRODUCIBILITY.md) and
+[`experiments/README.md`](experiments/README.md) for workers, scratch storage,
+row counts, and restart behavior.
 
 ## Selected result views
+
+These are README previews. Publication files are regenerated into `figures/`
+by `make figures`. Axes, aggregation rules, and source tables are in
+[`docs/FIGURES.md`](docs/FIGURES.md).
 
 ### PTA advantage by demand class
 
@@ -137,13 +169,12 @@ schemas and expected locations.
 
 ![PTA performance after agent removal](docs/assets/agent_removal_deterioration.png)
 
-The [figure guide](docs/FIGURES.md) defines the axes, aggregation rules, and
-source tables for these previews.
-
 ## Citation
 
-Use GitHub's **Cite this repository** menu or the metadata in
-[`CITATION.cff`](CITATION.cff). Until the article has final bibliographic
-details, please cite the software release and the accompanying manuscript.
+Use GitHub's **Cite this repository** menu or [`CITATION.cff`](CITATION.cff).
+Until the article has final bibliographic details, please cite this software
+release and the manuscript title.
 
+## License
 
+[MIT License](LICENSE).

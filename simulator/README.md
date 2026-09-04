@@ -1,19 +1,42 @@
 # Simulator
 
 `src` contains the C11 simulator used by the final experiments. The source is
-kept as the verified research implementation rather than reformatted in ways
-that could silently change behavior. Its provenance is documented in
-`docs/PROVENANCE.md` and checked by `make verify`.
+kept as the verified research implementation. Do not reformat it in ways that
+could silently change behavior: `make verify` checks file hashes against
+[`docs/PROVENANCE.md`](../docs/PROVENANCE.md).
 
-Build from the repository root:
+## Source files and paper roles
+
+| File | Role |
+|---|---|
+| `main.c` | program entry |
+| `sim.c` | time loop; initializes target-path RNG after parameters are read |
+| `params.c`, `params.h` | parameter file I/O |
+| `ftracker.c`, `ftracker.h` | threshold updates for CT, LFTA, SBTA, SETA, and PTA |
+| `ftarget.c`, `ftarget.h` | demand / target paths, including the four demand classes |
+| `fxn.c`, `fxn.h` | service delivery, leaky integral, agent-specific gains |
+| `output.c`, `output.h` | metrics `R`, `R_abs`, switching, and post-removal windows |
+| `random.c`, `random.h` | random-number streams |
+| `types.h`, `global.h`, `extern.h`, `sim.h` | shared types and declarations |
+| `animate.c`, `gnu.c` | optional visualization helpers, not used for paper statistics |
+
+Method dispatch values (`Pid`) are listed in
+[`configs/methods.json`](../configs/methods.json):
+
+| `Pid` | Method |
+|---:|---|
+| 0 | LFTA |
+| 1 | PTA |
+| 2 | SETA |
+| 3 | SBTA |
+| 4 | CT |
+
+## Build and run
+
+From the repository root:
 
 ```bash
 make build
-```
-
-Run a small verified example:
-
-```bash
 make smoke
 ```
 
@@ -24,10 +47,11 @@ simulator/src/sim PARAMS_FILE OPFILES_FILE
 ```
 
 It first reads `params.default` and `opfiles.default` from the current working
-directory. The smoke wrapper creates these files in a temporary directory. For
-custom runs, use `configs/params.default` as the documented base and apply only
-the settings required by the experiment.
+directory. The smoke wrapper creates those files in a temporary directory. For
+custom runs, start from `configs/params.default` and override only the settings
+required by the experiment.
 
-The important controller dispatch values are listed in `configs/methods.json`.
-The output field definitions are summarized in `docs/DATA.md` and implemented
-in `src/output.c`.
+Paper campaigns should be launched through
+[`experiments/run_campaign.py`](../experiments/run_campaign.py) rather than by
+calling `sim` by hand, so that seeds, parameter snapshots, and output columns
+stay matched.

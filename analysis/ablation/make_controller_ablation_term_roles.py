@@ -20,7 +20,6 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-
 ROOT = Path(__file__).resolve().parents[2]
 AUDIT_DIR = ROOT / "data" / "processed" / "ablation"
 FIGURE_DIR = ROOT / "figures"
@@ -48,7 +47,9 @@ BOOTSTRAP_REPLICATES = 20_000
 CONDITION_KEYS = ["pop", "n", "step_ratio", "pattern", "threshold_range"]
 
 
-def percentile_interval(values: np.ndarray, statistic, seed: int) -> tuple[float, float]:
+def percentile_interval(
+    values: np.ndarray, statistic, seed: int
+) -> tuple[float, float]:
     """Return a percentile bootstrap interval over the supplied units."""
     values = np.asarray(values, dtype=float)
     rng = np.random.default_rng(seed)
@@ -75,6 +76,9 @@ def iterative_non_gradual_effects() -> pd.DataFrame:
         return cached.loc[cached["pattern"].eq("zigzag")].copy()
 
     runs = pd.read_csv(FULL_GRID_RUNS)
+    # The archived final campaign names the complete controller ``full_PTA``.
+    # Older exploratory files used ``PID``; normalize both at the input edge.
+    runs["ablation_variant"] = runs["ablation_variant"].replace({"full_PTA": "PID"})
     runs["threshold_range"] = runs["method_label"].str.extract(r"PTA-(HT1|HT2)")[0]
     runs["r2_norm"] = runs["avg_post"] / np.sqrt(runs["n"])
     runs = runs.loc[runs["pattern"].eq("zigzag")]
@@ -113,7 +117,9 @@ def iterative_non_gradual_effects() -> pd.DataFrame:
                     "baseline_mean_r2_norm": before_mean,
                     "with_term_mean_r2_norm": float(after.mean()),
                     "condition_mean_reduction_norm": float(reduction.mean()),
-                    "relative_reduction_percent": 100.0 * float(reduction.mean()) / before_mean,
+                    "relative_reduction_percent": 100.0
+                    * float(reduction.mean())
+                    / before_mean,
                     "term_reduced_error": bool(reduction.mean() > 0),
                     "p_value": p_value,
                 }
@@ -140,7 +146,9 @@ def plateau_effects() -> tuple[pd.DataFrame, pd.DataFrame | None]:
         ).dropna()
         records: list[dict[str, object]] = []
         unit_records: list[pd.DataFrame] = []
-        for index, (added_term, comparison, baseline, with_term) in enumerate(comparisons):
+        for index, (added_term, comparison, baseline, with_term) in enumerate(
+            comparisons
+        ):
             before = paired[baseline].to_numpy()
             after = paired[with_term].to_numpy()
             reduction = before - after
@@ -159,7 +167,9 @@ def plateau_effects() -> tuple[pd.DataFrame, pd.DataFrame | None]:
                     "paired_repetitions": len(reduction),
                     "baseline_mean_late_abs_error": before_mean,
                     "with_term_mean_late_abs_error": float(after.mean()),
-                    "relative_reduction_percent": 100.0 * float(reduction.mean()) / before_mean,
+                    "relative_reduction_percent": 100.0
+                    * float(reduction.mean())
+                    / before_mean,
                     "relative_ci95_low": 100.0 * low / before_mean,
                     "relative_ci95_high": 100.0 * high / before_mean,
                     "with_term_lower_repetitions": int((reduction > 0).sum()),
@@ -201,10 +211,30 @@ def selected_summary() -> pd.DataFrame:
     records: list[dict[str, object]] = []
 
     panel_specs = [
-        ("a", "Iterative non-gradual", "D", ["P $\\rightarrow$ PD", "PI $\\rightarrow$ full PTA"]),
-        ("b", "Iterative non-gradual", "I", ["P $\\rightarrow$ PI", "PD $\\rightarrow$ full PTA"]),
-        ("c", "Sustained plateau", "D", ["P $\\rightarrow$ PD", "PI $\\rightarrow$ full PTA"]),
-        ("d", "Sustained plateau", "I", ["P $\\rightarrow$ PI", "PD $\\rightarrow$ full PTA"]),
+        (
+            "a",
+            "Iterative non-gradual",
+            "D",
+            ["P $\\rightarrow$ PD", "PI $\\rightarrow$ full PTA"],
+        ),
+        (
+            "b",
+            "Iterative non-gradual",
+            "I",
+            ["P $\\rightarrow$ PI", "PD $\\rightarrow$ full PTA"],
+        ),
+        (
+            "c",
+            "Sustained plateau",
+            "D",
+            ["P $\\rightarrow$ PD", "PI $\\rightarrow$ full PTA"],
+        ),
+        (
+            "d",
+            "Sustained plateau",
+            "I",
+            ["P $\\rightarrow$ PI", "PD $\\rightarrow$ full PTA"],
+        ),
     ]
 
     # Correct all 32 condition-level tests and four plateau tests together.
@@ -241,7 +271,9 @@ def selected_summary() -> pd.DataFrame:
                         "ci95_low": low,
                         "ci95_high": high,
                         "units": len(group),
-                        "units_with_lower_error": int(group["term_reduced_error"].sum()),
+                        "units_with_lower_error": int(
+                            group["term_reduced_error"].sum()
+                        ),
                         "significant_units": int((group["bh_q"] < 0.05).sum()),
                         "unit_label": "conditions",
                         "max_bh_q": float(group["bh_q"].max()),
@@ -262,7 +294,9 @@ def selected_summary() -> pd.DataFrame:
                         "ci95_low": float(row["relative_ci95_low"]),
                         "ci95_high": float(row["relative_ci95_high"]),
                         "units": int(row["paired_repetitions"]),
-                        "units_with_lower_error": int(row["with_term_lower_repetitions"]),
+                        "units_with_lower_error": int(
+                            row["with_term_lower_repetitions"]
+                        ),
                         "significant_units": int(row["bh_q"] < 0.05),
                         "unit_label": "repetitions",
                         "max_bh_q": float(row["bh_q"]),
@@ -379,7 +413,9 @@ def main() -> None:
         }
     )
     colors = {"D": "#D55E00", "I": "#009E73"}
-    fig, axes = plt.subplots(2, 2, figsize=(7.25, 5.15), sharey=True, constrained_layout=True)
+    fig, axes = plt.subplots(
+        2, 2, figsize=(7.25, 5.15), sharey=True, constrained_layout=True
+    )
     for ax, (_, group) in zip(axes.flat, summary.groupby("panel", sort=True)):
         draw_panel(ax, group, colors[str(group.iloc[0]["added_term"])])
     axes[0, 0].set_ylabel(r"$R_{2,\mathrm{norm}}$ reduction (%)")

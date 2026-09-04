@@ -10,7 +10,6 @@ import numpy as np
 import pandas as pd
 from scipy.stats import wilcoxon
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 INPUT = Path(
     os.environ.get(
@@ -58,7 +57,9 @@ def bootstrap_reduction(
     n_boot: int = 5000,
     seed: int = 20260822,
 ) -> tuple[float, float, float]:
-    clustered = effects.groupby(cluster_columns, sort=False)["log_ratio"].apply(np.asarray)
+    clustered = effects.groupby(cluster_columns, sort=False)["log_ratio"].apply(
+        np.asarray
+    )
     arrays = clustered.to_list()
     estimate = reduction_from_log(np.concatenate(arrays))
     rng = np.random.default_rng(seed)
@@ -87,13 +88,18 @@ def audit_grid(runs: pd.DataFrame) -> list[str]:
     notes.append(f"Rows: {len(runs):,}")
     notes.append(f"Conditions: {runs[CONDITION].drop_duplicates().shape[0]}")
     notes.append(f"Configurations: {runs[CONFIG].drop_duplicates().shape[0]}")
-    notes.append(f"Repetitions: {sorted(runs['rep'].unique().tolist())[:3]} ... {sorted(runs['rep'].unique().tolist())[-3:]}")
-    counts = runs.groupby(CONDITION + CONFIG, dropna=False).size()
-    notes.append(f"Rows per condition-configuration: {sorted(counts.unique().tolist())}")
-    seed_check = runs.groupby(CONDITION + ["rep"])[["seed", "target_path_seed"]].nunique()
     notes.append(
-        "Matched seeds across configurations: "
-        f"{bool(seed_check.eq(1).all().all())}"
+        f"Repetitions: {sorted(runs['rep'].unique().tolist())[:3]} ... {sorted(runs['rep'].unique().tolist())[-3:]}"
+    )
+    counts = runs.groupby(CONDITION + CONFIG, dropna=False).size()
+    notes.append(
+        f"Rows per condition-configuration: {sorted(counts.unique().tolist())}"
+    )
+    seed_check = runs.groupby(CONDITION + ["rep"])[
+        ["seed", "target_path_seed"]
+    ].nunique()
+    notes.append(
+        f"Matched seeds across configurations: {bool(seed_check.eq(1).all().all())}"
     )
     duplicate_keys = runs.duplicated(CONDITION + CONFIG + ["rep"], keep=False).sum()
     notes.append(f"Duplicate condition-configuration-repetition rows: {duplicate_keys}")
@@ -161,7 +167,9 @@ def fixed_vs_family_oracles(means: pd.DataFrame, pta_config: str) -> pd.DataFram
     pta = means[means["config_label"].eq(pta_config)].set_index(CONDITION)
     rows = []
     for family in ["CT", "LFTA", "SBTA", "SETA"]:
-        comparator = best_by_condition(means, family).set_index(CONDITION).loc[pta.index]
+        comparator = (
+            best_by_condition(means, family).set_index(CONDITION).loc[pta.index]
+        )
         log_ratio = np.log(pta["R"].to_numpy() / comparator["R"].to_numpy())
         effects = pta.reset_index()[CONDITION].copy()
         effects["log_ratio"] = log_ratio
@@ -229,7 +237,9 @@ def fixed_vs_reference_selected(
         rows.append(
             {
                 "PTA_configuration": pta_config,
-                "evaluation_scope": "held-out conditions" if exclude_reference else "complete grid",
+                "evaluation_scope": "held-out conditions"
+                if exclude_reference
+                else "complete grid",
                 "comparator_configuration": selected.loc[
                     selected["family"].eq(family), "config_label"
                 ].iloc[0],
@@ -255,7 +265,9 @@ def fixed_vs_reference_selected(
             record.update(
                 {
                     "PTA_configuration": pta_config,
-                    "evaluation_scope": "held-out conditions" if exclude_reference else "complete grid",
+                    "evaluation_scope": "held-out conditions"
+                    if exclude_reference
+                    else "complete grid",
                     "comparator_family": family,
                     "median_difference": float(np.median(x - y)),
                     "wilcoxon_statistic": float(statistic),
@@ -286,8 +298,7 @@ def fixed_vs_range_matched(means: pd.DataFrame, pta_config: str) -> pd.DataFrame
     rows = []
     for family in ["CT", "LFTA", "SBTA", "SETA"]:
         comparator = means[
-            means["family"].eq(family)
-            & means["threshold_range"].eq(threshold_range)
+            means["family"].eq(family) & means["threshold_range"].eq(threshold_range)
         ].copy()
         if family == "SETA":
             comparator = comparator[comparator["threshold_mode"].eq(threshold_mode)]
@@ -351,13 +362,17 @@ def factor_summary(
                 "wins_vs_best_alternative": int(group["log_ratio"].lt(0).sum()),
                 "median_R_reduction_pct": reduction_from_log(group["log_ratio"]),
                 "wins_R_abs": int(group["raw_log_ratio"].lt(0).sum()),
-                "median_R_abs_reduction_pct": reduction_from_log(group["raw_log_ratio"]),
+                "median_R_abs_reduction_pct": reduction_from_log(
+                    group["raw_log_ratio"]
+                ),
             }
         )
     return pd.DataFrame(rows)
 
 
-def preferred_counts(means: pd.DataFrame, family: str, factors: list[str]) -> pd.DataFrame:
+def preferred_counts(
+    means: pd.DataFrame, family: str, factors: list[str]
+) -> pd.DataFrame:
     winners = best_by_condition(means, family)
     result = (
         winners.groupby(factors + ["config_label"])
@@ -381,31 +396,61 @@ def write_report(
 ) -> None:
     lines = ["FROZEN-REFERENCE FIXED-CONFIGURATION AUDIT", ""]
     lines.extend(audit)
-    lines.extend(["", "REFERENCE-SETTING SELECTIONS", selected[["family", "config_label", "R", "R_abs"]].to_string(index=False)])
+    lines.extend(
+        [
+            "",
+            "REFERENCE-SETTING SELECTIONS",
+            selected[["family", "config_label", "R", "R_abs"]].to_string(index=False),
+        ]
+    )
     lines.extend(["", "ALL FIXED PTA CONFIGURATIONS", fixed.to_string(index=False)])
-    lines.extend(["", "KEY PTA CONFIGURATIONS VS CONDITION-WISE FAMILY ORACLES", oracle_tables.to_string(index=False)])
-    lines.extend(["", "KEY PTA CONFIGURATIONS VS REFERENCE-SELECTED FIXED COMPARATORS", reference_tables.to_string(index=False)])
+    lines.extend(
+        [
+            "",
+            "KEY PTA CONFIGURATIONS VS CONDITION-WISE FAMILY ORACLES",
+            oracle_tables.to_string(index=False),
+        ]
+    )
+    lines.extend(
+        [
+            "",
+            "KEY PTA CONFIGURATIONS VS REFERENCE-SELECTED FIXED COMPARATORS",
+            reference_tables.to_string(index=False),
+        ]
+    )
     sig = (
-        significance.groupby(["PTA_configuration", "comparator_family", "direction"])["significant"]
+        significance.groupby(["PTA_configuration", "comparator_family", "direction"])[
+            "significant"
+        ]
         .sum()
         .unstack(fill_value=0)
         .reset_index()
     )
-    lines.extend(["", "WILCOXON RESULTS FOR REFERENCE-SELECTED FIXED COMPARATORS", sig.to_string(index=False)])
+    lines.extend(
+        [
+            "",
+            "WILCOXON RESULTS FOR REFERENCE-SELECTED FIXED COMPARATORS",
+            sig.to_string(index=False),
+        ]
+    )
     (OUT / "audit_report.txt").write_text("\n".join(lines) + "\n")
 
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    columns = CONDITION + CONFIG + [
-        "method",
-        "method_label",
-        "rep",
-        "seed",
-        "target_path_seed",
-        "R",
-        "R_abs",
-    ]
+    columns = (
+        CONDITION
+        + CONFIG
+        + [
+            "method",
+            "method_label",
+            "rep",
+            "seed",
+            "target_path_seed",
+            "R",
+            "R_abs",
+        ]
+    )
     runs = pd.read_csv(INPUT, usecols=columns)
     runs = runs[runs["step_ratio"].isin([1.5, 2.0, 2.5])].copy()
     runs["gain_scheme"] = runs["gain_scheme"].fillna("")
@@ -444,7 +489,9 @@ def main() -> None:
         [fixed_vs_family_oracles(means, config) for config in key_configurations],
         ignore_index=True,
     )
-    oracle_tables.to_csv(OUT / "key_pta_vs_conditionwise_family_oracles.csv", index=False)
+    oracle_tables.to_csv(
+        OUT / "key_pta_vs_conditionwise_family_oracles.csv", index=False
+    )
 
     reference_tables = []
     significance_tables = []
@@ -462,8 +509,12 @@ def main() -> None:
     reference_tables_df = pd.concat(reference_tables, ignore_index=True)
     significance_df = pd.concat(significance_tables, ignore_index=True)
     held_out_tables_df = pd.concat(held_out_tables, ignore_index=True)
-    held_out_significance_df = pd.concat(held_out_significance_tables, ignore_index=True)
-    reference_tables_df.to_csv(OUT / "key_pta_vs_reference_selected_fixed.csv", index=False)
+    held_out_significance_df = pd.concat(
+        held_out_significance_tables, ignore_index=True
+    )
+    reference_tables_df.to_csv(
+        OUT / "key_pta_vs_reference_selected_fixed.csv", index=False
+    )
     significance_df.to_csv(OUT / "fixed_comparison_wilcoxon_tests.csv", index=False)
     held_out_tables_df.to_csv(
         OUT / "key_pta_vs_reference_selected_fixed_held_out.csv", index=False
@@ -489,12 +540,20 @@ def main() -> None:
 
     preferred_tables = []
     for family in ["CT", "LFTA", "SBTA", "SETA", "PTA"]:
-        preferred_tables.append(preferred_counts(means, family, ["pattern", "step_ratio"]))
-    preferred_df = pd.concat(preferred_tables, keys=["CT", "LFTA", "SBTA", "SETA", "PTA"], names=["family"]).reset_index(level=0)
-    preferred_df.to_csv(OUT / "family_preferred_configurations_by_demand_and_step.csv", index=False)
+        preferred_tables.append(
+            preferred_counts(means, family, ["pattern", "step_ratio"])
+        )
+    preferred_df = pd.concat(
+        preferred_tables, keys=["CT", "LFTA", "SBTA", "SETA", "PTA"], names=["family"]
+    ).reset_index(level=0)
+    preferred_df.to_csv(
+        OUT / "family_preferred_configurations_by_demand_and_step.csv", index=False
+    )
 
     pta_preferred_pop_task = preferred_counts(means, "PTA", ["pop", "n"])
-    pta_preferred_pop_task.to_csv(OUT / "pta_preferred_configurations_by_population_and_tasks.csv", index=False)
+    pta_preferred_pop_task.to_csv(
+        OUT / "pta_preferred_configurations_by_population_and_tasks.csv", index=False
+    )
     best_pta.to_csv(OUT / "conditionwise_preferred_pta.csv", index=False)
     best_alt.to_csv(OUT / "conditionwise_best_alternative.csv", index=False)
 

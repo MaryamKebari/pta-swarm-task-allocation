@@ -16,7 +16,10 @@ make figures
 The smoke test runs in a temporary directory with fixed agent and target path
 seeds. It checks that the simulator completes and emits the paper critical
 metrics. The unit tests verify the selector stimulus derivative, target path RNG
-initialization order, feedback clipping default, and processed data coverage.
+initialization order, feedback clipping default, processed data coverage, and
+archived numerical regression values for all five method families. The
+regression allows a small cross platform tolerance because compiler and math
+library differences can alter stochastic threshold decisions near equality.
 
 ## Reproduce public analyses
 
@@ -28,9 +31,43 @@ Each module writes to its corresponding processed data directory.
 ## Reproduce the full campaigns
 
 Full campaigns require millions of simulator calls and are intended for a Linux
-compute host. Use `configs/experiment_design.json` as the authoritative factor
-specification, `configs/methods.json` for implementation mappings, and
-`data/parameters/reference_tuned_parameters.csv` for the selected parameters.
+compute host. `experiments/tune_reference.py` implements reference tuning, and
+`experiments/run_campaign.py` implements the clean feedback, repeated reversal
+ablation, removal, and imperfect feedback grids. Use
+`configs/experiment_design.json` as the authoritative factor specification,
+`configs/methods.json` for implementation mappings, and
+`data/parameters/reference_tuned_parameters.csv` for the published selections.
+
+First confirm the environment:
+
+```bash
+make build
+make campaign-smoke
+make tuning-smoke
+```
+
+Then launch one audited stage at a time:
+
+```bash
+python experiments/tune_reference.py --workers 8 --scratch-root /local/scratch/pta
+python experiments/run_campaign.py clean --workers 8 --scratch-root /local/scratch/pta
+python experiments/run_campaign.py ablation --workers 8 --scratch-root /local/scratch/pta
+python experiments/run_campaign.py removal --workers 8 --scratch-root /local/scratch/pta
+python experiments/run_campaign.py feedback --workers 8 --scratch-root /local/scratch/pta
+```
+
+Each validation runner appends completed rows and skips matching rows on an
+identical restart. It never changes the simulator source or base parameter
+snapshot. Use `--dry-run` to record and inspect a campaign plan, and use factor,
+family, or configuration filters to create compute shards. Do not merge shards
+unless their manifests, parameter table, and seed maps match.
+
+Expected paper grid rows are 388,800 clean feedback rows, 12,800 repeated
+reversal ablation rows, 2,721,600 removal rows including the matched zero
+removal window, and 1,296,000 imperfect feedback rows. Reference tuning uses
+64,800 simulator calls. The separate sustained plateau diagnostic is described
+in `docs/PAPER_TRACEABILITY.md` and analyzed through the committed ablation
+module.
 Maintain these invariants:
 
 1. use 1,000 steps and 100 validation repetitions;
