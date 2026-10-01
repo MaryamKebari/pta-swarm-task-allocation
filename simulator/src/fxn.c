@@ -20,6 +20,7 @@
 #include "output.h"
 #include "ftarget.h"
 #include "ftracker.h"
+#include "freport.h"
 
 //#define DEBUG 1
 //#define DEBUG_AGENT 1
@@ -144,6 +145,10 @@ printf("---in init_fxn()---\n");
 
    if (Print_params)  fprint_pop(stdout);
 
+   /* per-agent report feedback state; no-op unless Report_feedback */
+   error = init_report_feedback();
+   if (error == ERROR)  return ERROR;
+
    /* HDM; moved initialize tracker to after initialize agents; 2019.09.12 */
    /* initialize tracker */
    error = init_tracker();
@@ -170,6 +175,7 @@ int end_fxn()
 printf("---in end_fxn()---\n");
 #endif
 
+   end_report_feedback();
    free(Agent);
 
 #ifdef DEBUG

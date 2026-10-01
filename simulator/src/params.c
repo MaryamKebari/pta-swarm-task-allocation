@@ -244,6 +244,10 @@ int set_param(char *aline)
          return ERROR;
          }
       }
+   else if (!strcmp(name, "Report_feedback"))  sscanf(temp, "%d", &Report_feedback);
+   else if (!strcmp(name, "Report_k"))  sscanf(temp, "%d", &Report_k);
+   else if (!strcmp(name, "Report_seed"))  sscanf(temp, "%ld", &Report_seed);
+   else if (!strcmp(name, "Obs_noise_alpha"))  sscanf(temp, "%lf", &Obs_noise_alpha);
    else if (!strcmp(name, "FixedTargetPath"))  sscanf(temp, "%d", &FixedTargetPath);
    else if (!strcmp(name, "TargetPathSeed"))  sscanf(temp, "%lu", &TargetPathSeed);
    else if (!strcmp(name, "Demand_segment_len"))  sscanf(temp, "%d", &Demand_segment_len);

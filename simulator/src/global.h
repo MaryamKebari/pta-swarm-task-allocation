@@ -52,6 +52,10 @@ int Feedback_noise_clip;           /* 1=clip noisy feedback to [-Pop_size, Pop_s
 double Feedback_bias_alpha;        /* fixed task-bias multiplier for feedback error */
 long Feedback_bias_seed;           /* paired seed for deterministic task-bias signs */
 int Feedback_bias_mode;            /* 0=none, 1=fixed random task signs, 2=positive */
+int Report_feedback;               /* 1=per-agent feedback from peer reports (freport.c) */
+int Report_k;                      /* peers sampled per step; <=0 means all live agents */
+long Report_seed;                  /* seed for observation noise and peer sampling */
+double Obs_noise_alpha;            /* private observation noise sigma multiplier */
 /********** parameters read in from elsewhere **********/
 int Run_num;                    /* read in from Run_num_file */
 int Max_num_output_files;       /* read in from opfiles.default */

@@ -1,7 +1,10 @@
 # Proposal: trust-aware PTA with Byzantine and strategic agents
 
-Status: design sketch for a follow-up paper. Nothing here changes the
-simulator yet, and the published campaign results are unaffected.
+Status: design sketch for a follow-up paper. Step 1 (report-based feedback
+with honest agents and the reduction test) is implemented in
+`simulator/src/freport.c` and `tests/test_report_feedback.py`. All new options
+are off by default, and default runs reproduce the published campaign results
+exactly.
 
 Working title: *Trust-Aware Threshold Adaptation for Swarm Task Allocation
 with Strategic and Byzantine Agents.*

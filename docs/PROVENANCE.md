@@ -43,3 +43,23 @@ The verified simulator retains:
 - paired imbalance, raw residual, Euclidean, switching, and post removal metrics.
 
 The public wrappers and documentation do not silently alter these choices.
+
+## Report-feedback extension
+
+After the paper campaign, the simulator was extended with optional
+report-based feedback (`simulator/src/freport.c`, see
+[`proposals/TRUST_AWARE_PTA.md`](proposals/TRUST_AWARE_PTA.md)). The extension
+touches `ftracker.c`, `fxn.c`, `params.c`, `output.c`, `global.h`, `extern.h`
+and the Makefile, so their hashes in
+`data/provenance/simulator_source_sha256.csv` now describe the extended tree.
+The paper campaign `ftracker.c` value above is unchanged as a historical
+record. The last commit whose simulator source matches the campaign byte for
+byte is `b5b0e1d` (“Align folders with the paper experiments”).
+
+Every new parameter is off by default and the extension never draws from the
+agent random stream. Before the extension was committed, all 27 method
+configurations, with and without agent removal, were run with the campaign
+binary and the extended binary, and the final statistics matched exactly.
+`tests/test_report_feedback.py` keeps checking that report mode with honest,
+noise-free peers reproduces shared-feedback runs exactly, and
+`tests/test_campaign_reproduction.py` still checks the archived values.

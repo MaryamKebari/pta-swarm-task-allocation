@@ -2,7 +2,7 @@ CC      = gcc
 CFLAGS  = -O2 -Wall -Wextra -std=c11
 LDLIBS  = -lm
 
-OFILES  = main.o sim.o params.o random.o output.o fxn.o ftarget.o ftracker.o gnu.o animate.o
+OFILES  = main.o sim.o params.o random.o output.o fxn.o ftarget.o ftracker.o freport.o gnu.o animate.o
 HFILES  = types.h global.h extern.h
 
 sim: $(OFILES) $(HFILES)
@@ -37,6 +37,9 @@ ftarget.o: ftarget.c ftarget.h $(HFILES)
 
 ftracker.o: ftracker.c ftracker.h $(HFILES)
 	$(CC) $(CFLAGS) -c ftracker.c
+
+freport.o: freport.c freport.h $(HFILES)
+	$(CC) $(CFLAGS) -c freport.c
 
 gnu.o: gnu.c gnu.h $(HFILES)
 	$(CC) $(CFLAGS) -c gnu.c

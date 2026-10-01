@@ -351,6 +351,13 @@ void print_params(FILE *fp)
       fprintf(fp, " Feedback_bias_mode = positive\n");
    else
       fprintf(fp, " Feedback_bias_mode = none\n");
+   if (Report_feedback)
+      {
+      fprintf(fp, " Report_feedback = %d\n", Report_feedback);
+      fprintf(fp, " Report_k = %d\n", Report_k);
+      fprintf(fp, " Report_seed = %ld\n", Report_seed);
+      fprintf(fp, " Obs_noise_alpha = %lf\n", Obs_noise_alpha);
+      }
    fprintf(fp, " Demand_segment_len = %d\n", Demand_segment_len);
    fprintf(fp, " Demand_switch_step = %d\n", Demand_switch_step);
    }  /* print_params */

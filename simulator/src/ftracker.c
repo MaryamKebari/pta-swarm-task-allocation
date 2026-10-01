@@ -12,6 +12,7 @@
 #include "ftracker.h"
 #include "fxn.h"
 #include "random.h"
+#include "freport.h"
 
 // for debugging -- the code within these defines can be deleted.
 //#define TEMP
@@ -21,11 +22,18 @@
 // #define HISTOGRAM_SIZE (int)((Intensity_aging_max - Intensity_aging_min) * 10)
 #define HISTOGRAM_SIZE 10
 
-static double task_stimulus(int tasknum)
+static double task_stimulus(int agent_num, int tasknum)
    {
    double feedback;
 
    if (tasknum <= 0 || tasknum > MAX_TASKS) return 0.0;
+
+   /* Report mode: each agent reacts to its own feedback estimate. */
+   if (Report_feedback && !strncmp(Task_demand_pattern, "legacy_vector", 13))
+      {
+      feedback = report_feedback(agent_num, tasknum);
+      return (feedback > 0.0) ? feedback : 0.0;
+      }
 
    /* In the paired-demand experiments, both the selector and the adaptive
       update receive the same delivered feedback.  Clean feedback therefore
@@ -69,6 +77,7 @@ printf("---in move_tracker()---\n");
 
    update_task_demands(t);
    update_pre_service_task_error();
+   update_report_feedback();
    if (select_tasks() == ERROR)  return ERROR;
 
    zero_pushes();
@@ -338,8 +347,8 @@ printf("---in agent_select_task()---\n");
    /* check each selectable task channel */
    for (j=1; j<=Num_tasks; j++)
       {
-      if (task_stimulus(j) > 0 &&
-          agent_task_threshold(agent_num, j) < task_stimulus(j))
+      if (task_stimulus(agent_num, j) > 0 &&
+          agent_task_threshold(agent_num, j) < task_stimulus(agent_num, j))
          {
          active_tasks[j] = 1;
          sum++;
@@ -446,8 +455,8 @@ printf("---in agent_select_task_spontaneous()---\n");
       not pass the response threshold. */
    for (j=1; j<=Num_tasks; j++)
       {
-      if (task_stimulus(j) > 0 &&
-          agent_task_threshold(agent_num, j) >= task_stimulus(j))
+      if (task_stimulus(agent_num, j) > 0 &&
+          agent_task_threshold(agent_num, j) >= task_stimulus(agent_num, j))
          {
          active_tasks[j] = 1;
          sum++;
@@ -523,14 +532,14 @@ printf("---in adjust_agent_thresholds()---\n");
          }
       }
 
-   if (Pid == 2)
+   if (Pid == 2 && !Report_feedback)
       {
       double eta = P_gain;
       for (task=1; task<=Num_tasks; task++)
          Agent[n].thresh_task[task] -= eta * Task_feedback_error[task];
       }
 
-   if (Pid == 3)
+   if (Pid == 3 && !Report_feedback)
       {
       double eta_sign = P_gain;
       for (task=1; task<=Num_tasks; task++)
@@ -543,7 +552,7 @@ printf("---in adjust_agent_thresholds()---\n");
          }
       }
 
-   if (Pid == 1)
+   if (Pid == 1 && !Report_feedback)
       {
       double alpha = Agent_pid_gains ? Agent[n].agent_P_gain : P_gain;
       double beta = Agent_pid_gains ? Agent[n].agent_D_gain : D_gain;
@@ -582,6 +591,42 @@ printf("---in adjust_agent_thresholds()---\n");
             }
          }
    }
+
+   /* Report mode: SETA, SBTA and PTA use the agent's own feedback estimate,
+      previous estimate and integral (freport.c) in place of the shared
+      channel. The update formulas are unchanged. */
+   if (Report_feedback && (Pid == 1 || Pid == 2 || Pid == 3))
+      {
+      double alpha = Agent_pid_gains ? Agent[n].agent_P_gain : P_gain;
+      double beta = Agent_pid_gains ? Agent[n].agent_D_gain : D_gain;
+      double gamma = Agent_pid_gains ? Agent[n].agent_I_gain : I_gain;
+
+      for (task=1; task<=Num_tasks; task++)
+         {
+         double feedback = report_feedback(n, task);
+
+         if (Pid == 2)
+            Agent[n].thresh_task[task] -= P_gain * feedback;
+         else if (Pid == 3)
+            {
+            if (feedback > 0.0)
+               Agent[n].thresh_task[task] -= P_gain;
+            else if (feedback < 0.0)
+               Agent[n].thresh_task[task] += P_gain;
+            }
+         else
+            {
+            double current_stimulus = fmax(feedback, 0.0);
+            double previous_stimulus = fmax(report_prev_feedback(n, task), 0.0);
+            double derivative = current_stimulus - previous_stimulus;
+            double integral = report_error_integral(n, task);
+
+            Agent[n].thresh_task[task] -= alpha * feedback;
+            Agent[n].thresh_task[task] -= beta * derivative;
+            Agent[n].thresh_task[task] -= gamma * integral;
+            }
+         }
+      }
 
    for (task=1; task<=Num_tasks; task++)
       {
@@ -707,10 +752,10 @@ printf(" sum = %d\n", sum);
       most_urgent_stimulus = -1.0;
       for (int i=1; i<=Num_tasks; i++)
          {
-         if (active_tasks[i] == 1 && task_stimulus(i) > most_urgent_stimulus)
+         if (active_tasks[i] == 1 && task_stimulus(agent_num, i) > most_urgent_stimulus)
             {
             most_urgent_task = i;
-            most_urgent_stimulus = task_stimulus(i);
+            most_urgent_stimulus = task_stimulus(agent_num, i);
 #ifdef TEMP2
 printf(" task mutask %d mustim %lf\n", most_urgent_task, most_urgent_stimulus);
 #endif

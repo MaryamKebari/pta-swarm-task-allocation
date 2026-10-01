@@ -10,7 +10,11 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_FTRACKER = "86ba010cdf4fe7d097fdfd3328331bddf54841efa4cdc547156cf809c54d35f9"
+# ftracker.c with the report-feedback extension. The paper campaign value,
+# 86ba010cdf4fe7d097fdfd3328331bddf54841efa4cdc547156cf809c54d35f9, is kept in
+# docs/PROVENANCE.md; tests/test_report_feedback.py checks that default runs
+# still reproduce it exactly.
+EXPECTED_FTRACKER = "9f3e23c2e6fc5faca4a2116c69048086d4bc82b17b8852a2e8e4eb8d7be3ff72"
 EXPECTED_PARAMS = "01d394af9229c4494247f429e5714f6088de4b17d80aa3591a4bcad3088d1156"
 REQUIRED = [
     "README.md",

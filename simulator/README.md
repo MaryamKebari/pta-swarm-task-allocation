@@ -13,6 +13,7 @@ could silently change behavior: `make verify` checks file hashes against
 | `sim.c` | time loop; initializes target-path RNG after parameters are read |
 | `params.c`, `params.h` | parameter file I/O |
 | `ftracker.c`, `ftracker.h` | threshold updates for CT, LFTA, SBTA, SETA, and PTA |
+| `freport.c`, `freport.h` | optional per-agent feedback from peer reports (off by default) |
 | `ftarget.c`, `ftarget.h` | demand / target paths, including the four demand classes |
 | `fxn.c`, `fxn.h` | service delivery, leaky integral, agent-specific gains |
 | `output.c`, `output.h` | metrics `R`, `R_abs`, switching, and post-removal windows |

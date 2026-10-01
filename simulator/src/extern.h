@@ -103,6 +103,10 @@ extern int Feedback_noise_clip;
 extern double Feedback_bias_alpha;
 extern long Feedback_bias_seed;
 extern int Feedback_bias_mode;
+extern int Report_feedback;
+extern int Report_k;
+extern long Report_seed;
+extern double Obs_noise_alpha;
 
 extern int FixedTargetPath; // 0 = random target path each run, 1 = fixed
 extern unsigned long TargetPathSeed; // Seed for target path if fixed

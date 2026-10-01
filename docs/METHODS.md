@@ -62,3 +62,29 @@ tracking imbalance along the signed task axes. `R_abs` is the complementary time
 averaged root mean square of the raw directional channel residual. Lower values
 are better. Additional Euclidean and switching measures are retained in the raw
 and processed results.
+
+## Report-based feedback (extension)
+
+This mode is not used in the paper. Setting `Report_feedback 1` replaces the
+shared feedback channel with a per-agent estimate. Each live agent `i` makes a
+private observation `o[i,j] = e[j] + sigma * z[i,j]`, receives the
+observations of `Report_k` sampled live peers (`Report_k <= 0` means all of
+them), and forms
+
+```text
+ehat[i,j] = o[i,j] + sum_k (m[k,j] - o[i,j]) / (1 + number of peers)
+```
+
+SETA, SBTA, PTA and the selector stimulus then use `ehat[i,j]`, together with
+each agent's own previous estimate and leaky, bounded integral.
+
+| Parameter | Meaning | Default |
+|---|---|---:|
+| `Report_feedback` | 1 enables report mode | 0 |
+| `Report_k` | peers sampled per step; `<= 0` means all live agents | 0 |
+| `Obs_noise_alpha` | observation noise, as a multiple of mean positive task demand | 0 |
+| `Report_seed` | seed for observation noise and peer sampling | 0 |
+
+With `Obs_noise_alpha 0` and honest peers, report mode reproduces the shared
+feedback runs exactly. Run time grows with the square of the population when
+all peers are used, so experiments should use a small `Report_k`.
